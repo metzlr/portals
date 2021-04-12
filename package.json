@@ -1,0 +1,31 @@
+{
+  "name": "portals",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "parcel src/index.html --no-autoinstall -p 8000",
+    "prod": "parcel build src/index.html --public-url ./",
+    "clear-build-cache": "rm -rf .cache/ dist/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/metzlr/portals.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/metzlr/portals/issues"
+  },
+  "homepage": "https://github.com/metzlr/portals#readme",
+  "devDependencies": {
+    "eslint": "^7.24.0",
+    "eslint-config-prettier": "^8.1.0",
+    "eslint-plugin-prettier": "^3.3.1",
+    "parcel-bundler": "^1.12.5",
+    "prettier": "^2.2.1"
+  },
+  "dependencies": {
+    "three": "^0.127.0"
+  }
+}
