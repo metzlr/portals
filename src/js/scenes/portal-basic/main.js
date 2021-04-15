@@ -1,9 +1,9 @@
-import { SceneManager } from "./SceneManager.js";
+import PortalBasicScene from "../../../js/scenes/portal-basic/PortalBasicScene.js";
 import Stats from "three/examples/jsm/libs/stats.module";
 
 (function () {
   const canvas = document.getElementById("main-canvas");
-  const sceneManager = new SceneManager(canvas);
+  const sceneManager = new PortalBasicScene(canvas);
   const stats = setupStatDisplay();
   if (stats != undefined) {
     document.body.appendChild(stats.dom);
@@ -13,7 +13,7 @@ import Stats from "three/examples/jsm/libs/stats.module";
 
   function renderScene() {
     requestAnimationFrame(renderScene);
-    sceneManager.update();
+    sceneManager._update();
     if (stats != undefined) {
       stats.update();
     }
