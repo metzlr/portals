@@ -81,21 +81,13 @@ class SceneManager {
   render() {
     this.renderer.clear();
     this.controls.update();
-    // this._debugRenderPortalCams();
     this._renderPortals();
-    // this.renderer.render(
-    //   this.sceneObjects.portals[0]._interior,
-    //   this._tempCamera
-    // );
-    // this.renderer.render(this.scene, this.camera);
-    // console.log(this._tempCamera.matrix);
-    // this.renderer.render(this.scene, this._tempCamera);
   }
 
   _renderPortals() {
     // this._tempScene.clear();
     const gl = this.renderer.getContext();
-    for (let i = 0; i < 1; i++) {
+    for (let i = 0; i < this.sceneObjects.portals.length; i++) {
       const portal = this.sceneObjects.portals[i];
 
       if (portal._interior === undefined) {
@@ -136,8 +128,6 @@ class SceneManager {
       // Default normal of PlaneGeometry (aka portal) is (0, 0, 1)
       portal.destination._interior.getWorldQuaternion(rotation);
       const norm = new THREE.Vector3(0, 0, 1).applyQuaternion(rotation);
-      // norm.setFromRotationMatrix();
-      // console.log(portal.destination._interior.normalMatrix);
       let clipPlane = new THREE.Plane();
       clipPlane.setFromNormalAndCoplanarPoint(norm, pos);
       clipPlane.applyMatrix4(this._tempCamera.matrixWorldInverse);
@@ -186,6 +176,8 @@ class SceneManager {
       gl.colorMask(true, true, true, true);
 
       this.renderer.render(this.scene, this.camera);
+
+      break;
     }
   }
 
