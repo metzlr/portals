@@ -6,28 +6,33 @@ class Portal {
       console.error("Portal object should be a plane");
     }
 
-    const color = "#0335fc";
-    const borderWidth = 0.1;
+    const borderColor = "#003cff";
+    const borderWidth = 0.125;
 
-    this.mesh = mesh;
-    this.mesh.material = new THREE.MeshBasicMaterial({ color: color });
-    this.mesh.geometry.computeBoundingBox();
+    this.frameMesh = mesh;
+    this.frameMesh.visible = false;
+
     const size = new THREE.Vector3();
-    this.mesh.geometry.boundingBox.getSize(size);
-    // this.mesh.visible = false;
-    this.mesh.material.transparent = true;
-    // this.mesh.material.opacity = 0.3;
-
-    this._interior = new THREE.Mesh(
+    this.frameMesh.geometry.computeBoundingBox();
+    this.frameMesh.geometry.boundingBox.getSize(size);
+    this.backgroundMesh = new THREE.Mesh(
       new THREE.PlaneGeometry(
-        size.x - borderWidth * 2,
-        size.y - borderWidth * 2
+        size.x + borderWidth * 2,
+        size.y + borderWidth * 2
       ),
-      new THREE.MeshBasicMaterial({ color: color })
+      new THREE.MeshBasicMaterial({ color: borderColor })
     );
-    this.mesh.add(this._interior);
-    // Offset a bit so portal interior isn't completely flush with background (causing flickering)
-    this._interior.translateZ(0.005);
+    // Offset a bit so portal frame isn't completely flush with background (causing flickering)
+    this.backgroundMesh.translateZ(-0.005);
+
+    this.group = new THREE.Group();
+    this.group.add(this.frameMesh, this.backgroundMesh);
+    this.group.position.set(mesh.position.x, mesh.position.y, mesh.position.z);
+    this.group.rotation.set(mesh.rotation.x, mesh.rotation.y, mesh.rotation.z);
+    this.group.scale.set(mesh.scale.x, mesh.scale.y, mesh.scale.z);
+    this.frameMesh.rotation.set(0, 0, 0);
+    this.frameMesh.position.set(0, 0, 0);
+    this.frameMesh.scale.set(1, 1, 1);
 
     this._destination = destination;
   }

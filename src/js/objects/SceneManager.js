@@ -1,5 +1,4 @@
 import * as THREE from "three";
-import { Vector3 } from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import Portal from "./Portal.js";
 
@@ -41,6 +40,7 @@ class SceneManager {
       antialias: true,
     });
     this.renderer.autoClear = false;
+    this.renderer.setClearColor("#bbb");
 
     this._clock = new THREE.Clock();
     this.deltaTime = undefined;
@@ -57,9 +57,16 @@ class SceneManager {
     this.sceneObjects.geometry = geometry !== undefined ? geometry : null;
 
     if (portals !== null) {
+      const portalPrimitives = [];
       for (let i = 0; i < portals.children.length; i++) {
-        const portal = new Portal(portals.children[i]);
+        portalPrimitives.push(portals.children[i]);
+      }
+      for (let i = 0; i < portalPrimitives.length; i++) {
+        const portal = new Portal(portalPrimitives[i]);
         this.sceneObjects.portals.push(portal);
+      }
+      for (let i = 0; i < this.sceneObjects.portals.length; i++) {
+        portals.add(this.sceneObjects.portals[i].group);
       }
     }
   }
@@ -71,7 +78,10 @@ class SceneManager {
       const canvas = this.renderer.domElement;
       this.camera.aspect = canvas.clientWidth / canvas.clientHeight;
       this.camera.updateProjectionMatrix();
+      this._tempCamera.aspect = canvas.clientWidth / canvas.clientHeight;
+      this._tempCamera.updateProjectionMatrix();
     }
+    this.controls.update();
 
     this.update();
 
@@ -80,35 +90,30 @@ class SceneManager {
 
   render() {
     this.renderer.clear();
-    this.controls.update();
     this._renderPortals();
+    this.renderer.render(this.scene, this.camera);
   }
 
   _renderPortals() {
-    // this._tempScene.clear();
     const gl = this.renderer.getContext();
+    // Render each of the portal interiors first
     for (let i = 0; i < this.sceneObjects.portals.length; i++) {
       const portal = this.sceneObjects.portals[i];
 
-      if (portal._interior === undefined) {
-        console.warn("Portal interior is undefined");
-        continue;
-      }
-
-      portal._interior.visible = true;
-
+      portal.frameMesh.visible = true;
+      // First we increment the stencil buffer inside the portal frame
       gl.depthMask(false);
       gl.colorMask(false, false, false, false);
       gl.enable(gl.STENCIL_TEST);
       gl.stencilMask(0xff);
       gl.stencilOp(gl.INCR, gl.KEEP, gl.KEEP);
       gl.stencilFunc(gl.NEVER, 0, 0);
-      this.renderer.render(portal._interior, this.camera);
+      this.renderer.render(portal.frameMesh, this.camera);
 
-      // Generate view matrix for camera looking out of portal desination
+      // Now generate view matrix for camera looking out of portal desination
       const portalCamTransform = this._getOutportalCameraTransform(
-        portal._interior.matrixWorld,
-        portal.destination._interior.matrixWorld,
+        portal.frameMesh.matrixWorld,
+        portal.destination.frameMesh.matrixWorld,
         this.camera.matrixWorld
       );
       const pos = new THREE.Vector3().setFromMatrixPosition(portalCamTransform);
@@ -123,10 +128,11 @@ class SceneManager {
       this._tempCamera.updateMatrixWorld();
       this._tempCamera.updateProjectionMatrix();
 
+      // Align near plane of portal cam to frame of portal
       // Souce: http://www.terathon.com/lengyel/Lengyel-Oblique.pdf
-      portal.destination._interior.getWorldPosition(pos);
+      portal.destination.frameMesh.getWorldPosition(pos);
       // Default normal of PlaneGeometry (aka portal) is (0, 0, 1)
-      portal.destination._interior.getWorldQuaternion(rotation);
+      portal.destination.frameMesh.getWorldQuaternion(rotation);
       const norm = new THREE.Vector3(0, 0, 1).applyQuaternion(rotation);
       let clipPlane = new THREE.Plane();
       clipPlane.setFromNormalAndCoplanarPoint(norm, pos);
@@ -161,24 +167,25 @@ class SceneManager {
       gl.colorMask(true, true, true, true);
       gl.stencilFunc(gl.LEQUAL, 1, 0xff);
       this.renderer.render(this.scene, this._tempCamera);
+    }
 
+    // Now clear the depth buffer (it currently has depth data from portal cam's perspective) and update depth values for portal frame
+    gl.disable(gl.STENCIL_TEST);
+    gl.colorMask(false, false, false, false);
+    gl.clearDepth(1.0);
+    gl.clear(gl.DEPTH_BUFFER_BIT);
+    for (let i = 0; i < this.sceneObjects.portals.length; i++) {
+      const portal = this.sceneObjects.portals[i];
       // Clear depth buffer and get depth values for the portal frame
-      gl.disable(gl.STENCIL_TEST);
-      gl.colorMask(false, false, false, false);
-      gl.clearDepth(1.0);
-      gl.clear(gl.DEPTH_BUFFER_BIT);
-      this.renderer.render(portal._interior, this.camera);
+
+      this.renderer.render(portal.frameMesh, this.camera);
 
       // Disable the portal frame so its Material doesn't show up when we rerender scene
-      portal._interior.visible = false;
-
-      // Re-enable writing to color buffer
-      gl.colorMask(true, true, true, true);
-
-      this.renderer.render(this.scene, this.camera);
-
-      break;
+      portal.frameMesh.visible = false;
     }
+
+    // Re-enable writing to color buffer for normal scene render
+    gl.colorMask(true, true, true, true);
   }
 
   _getOutportalCameraTransform(

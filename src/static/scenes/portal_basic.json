@@ -90,6 +90,25 @@
 			"height": 3.5,
 			"widthSegments": 1,
 			"heightSegments": 1
+		},
+		{
+			"uuid": "F2C6E289-230A-482C-BCFE-8F3155B99010",
+			"type": "TorusKnotGeometry",
+			"radius": 1,
+			"tube": 0.4,
+			"tubularSegments": 110,
+			"radialSegments": 20,
+			"p": 2,
+			"q": 3
+		},
+		{
+			"uuid": "A540830E-BE58-4177-8F45-4E224A91F208",
+			"type": "TorusGeometry",
+			"radius": 1,
+			"tube": 0.4,
+			"radialSegments": 8,
+			"tubularSegments": 60,
+			"arc": 6.283185
 		}],
 	"materials": [
 		{
@@ -178,6 +197,46 @@
 			"type": "MeshStandardMaterial",
 			"color": 16711918,
 			"roughness": 1,
+			"metalness": 0,
+			"emissive": 0,
+			"depthFunc": 3,
+			"depthTest": true,
+			"depthWrite": true,
+			"colorWrite": true,
+			"stencilWrite": false,
+			"stencilWriteMask": 255,
+			"stencilFunc": 519,
+			"stencilRef": 0,
+			"stencilFuncMask": 255,
+			"stencilFail": 7680,
+			"stencilZFail": 7680,
+			"stencilZPass": 7680
+		},
+		{
+			"uuid": "E6DEF96A-4E1B-4755-B491-3BB8E7C766AA",
+			"type": "MeshStandardMaterial",
+			"color": 16718362,
+			"roughness": 0.24,
+			"metalness": 0,
+			"emissive": 0,
+			"depthFunc": 3,
+			"depthTest": true,
+			"depthWrite": true,
+			"colorWrite": true,
+			"stencilWrite": false,
+			"stencilWriteMask": 255,
+			"stencilFunc": 519,
+			"stencilRef": 0,
+			"stencilFuncMask": 255,
+			"stencilFail": 7680,
+			"stencilZFail": 7680,
+			"stencilZPass": 7680
+		},
+		{
+			"uuid": "C22313F3-96A0-4DC8-B844-B7DF6FCEBB8B",
+			"type": "MeshStandardMaterial",
+			"color": 3069805,
+			"roughness": 0.28,
 			"metalness": 0,
 			"emissive": 0,
 			"depthFunc": 3,
@@ -299,6 +358,24 @@
 						"geometry": "47B87906-9094-450D-9999-3DE3986FBF1A",
 						"material": "35F91A6E-719C-4DF5-9201-CF23390116EB"
 					}]
+			},
+			{
+				"uuid": "1285A455-5445-4790-9DCC-62B4B040DB91",
+				"type": "Mesh",
+				"name": "TorusKnot",
+				"layers": 1,
+				"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,-3.498985,1.672351,3.330761,1],
+				"geometry": "F2C6E289-230A-482C-BCFE-8F3155B99010",
+				"material": "E6DEF96A-4E1B-4755-B491-3BB8E7C766AA"
+			},
+			{
+				"uuid": "E8FDCD89-3983-4FB6-AE17-E8407B14716F",
+				"type": "Mesh",
+				"name": "Torus",
+				"layers": 1,
+				"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,6.009574,2.328894,2.518143,1],
+				"geometry": "A540830E-BE58-4177-8F45-4E224A91F208",
+				"material": "C22313F3-96A0-4DC8-B844-B7DF6FCEBB8B"
 			}]
 	}
 }
