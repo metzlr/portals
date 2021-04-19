@@ -31,14 +31,17 @@ class SceneManager {
     );
     // Since we'll be updating tempCamera matrices anyway, no need for auto updates
     this._tempCamera.matrixAutoUpdate = false;
+
     this._tempCameraHelper = new THREE.CameraHelper(this._tempCamera);
     this._tempCameraHelper.visible = false;
+
     this.scene.add(this._tempCameraHelper);
 
     this.renderer = new THREE.WebGLRenderer({
       canvas: canvas,
       antialias: true,
     });
+    this.renderer.outputEncoding = THREE.sRGBEncoding;
     this.renderer.autoClear = false;
     this.renderer.setClearColor("#bbb");
 
@@ -96,18 +99,25 @@ class SceneManager {
 
   _renderPortals() {
     const gl = this.renderer.getContext();
+
+    gl.enable(gl.STENCIL_TEST);
+    gl.stencilOp(gl.INCR, gl.KEEP, gl.KEEP);
+
     // Render each of the portal interiors first
     for (let i = 0; i < this.sceneObjects.portals.length; i++) {
       const portal = this.sceneObjects.portals[i];
 
       portal.frameMesh.visible = true;
       // First we increment the stencil buffer inside the portal frame
+      // Disable color and depth buffers
       gl.depthMask(false);
       gl.colorMask(false, false, false, false);
-      gl.enable(gl.STENCIL_TEST);
+      // Enable writing to all stencil bits
       gl.stencilMask(0xff);
-      gl.stencilOp(gl.INCR, gl.KEEP, gl.KEEP);
+      // Ensure stencil buffer always fails (so every pixel in portal will be incremented)
       gl.stencilFunc(gl.NEVER, 0, 0);
+      // Start with empty stencil buffer
+      gl.clear(gl.STENCIL_BUFFER_BIT);
       this.renderer.render(portal.frameMesh, this.camera);
 
       // Now generate view matrix for camera looking out of portal desination
@@ -161,28 +171,36 @@ class SceneManager {
       projectionMatrix.elements[10] = m3.z + 1.0;
       projectionMatrix.elements[14] = m3.w;
 
+      this._tempCamera.projectionMatrixInverse.copy(projectionMatrix).invert();
+
       // Render scene from perspective of portal destination (stencil ensures it only draws within the portal frame)
-      gl.stencilMask(false); // No more writing to stencil
+      // No more writing to stencil
+      gl.stencilMask(false);
+      // Enable writing to depth and color buffers
       gl.depthMask(true);
       gl.colorMask(true, true, true, true);
+      // Only draw where ref <= stencil value (i.e. where stencil value is >= 1)
       gl.stencilFunc(gl.LEQUAL, 1, 0xff);
       this.renderer.render(this.scene, this._tempCamera);
     }
 
-    // Now clear the depth buffer (it currently has depth data from portal cam's perspective) and update depth values for portal frame
+    // Disable stencil test and writing to color/stencil buffers
     gl.disable(gl.STENCIL_TEST);
+    gl.stencilMask(0);
     gl.colorMask(false, false, false, false);
+    // Now clear the depth buffer (it currently has depth data from portal cam's perspective) and update depth values for each portal frame
     gl.clearDepth(1.0);
     gl.clear(gl.DEPTH_BUFFER_BIT);
+    gl.depthFunc(gl.ALWAYS);
+
     for (let i = 0; i < this.sceneObjects.portals.length; i++) {
       const portal = this.sceneObjects.portals[i];
       // Clear depth buffer and get depth values for the portal frame
-
       this.renderer.render(portal.frameMesh, this.camera);
-
       // Disable the portal frame so its Material doesn't show up when we rerender scene
       portal.frameMesh.visible = false;
     }
+    gl.depthFunc(gl.LESS);
 
     // Re-enable writing to color buffer for normal scene render
     gl.colorMask(true, true, true, true);
