@@ -34,6 +34,42 @@
 			}
 		},
 		{
+			"uuid": "8E353D62-5EB0-4274-B9F2-58350EADC98C",
+			"type": "TorusGeometry",
+			"radius": 2,
+			"tube": 0.5,
+			"radialSegments": 30,
+			"tubularSegments": 50,
+			"arc": 6.283185
+		},
+		{
+			"uuid": "3A395EC9-56F3-4B10-A149-D465E7D5D0B9",
+			"type": "TubeGeometry",
+			"path": {
+				"metadata": {
+					"version": 4.5,
+					"type": "Curve",
+					"generator": "Curve.toJSON"
+				},
+				"arcLengthDivisions": 200,
+				"type": "CatmullRomCurve3",
+				"points": [[2,2,-2],[2,-2,-0.666667],[-2,-2,0.666667],[-2,2,2]],
+				"closed": false,
+				"curveType": "centripetal",
+				"tension": 0.5
+			},
+			"tubularSegments": 75,
+			"radius": 0.5,
+			"radialSegments": 40,
+			"closed": false
+		},
+		{
+			"uuid": "F39AC4B4-52A6-434B-BE64-C6D398046763",
+			"type": "DodecahedronGeometry",
+			"radius": 1.5,
+			"detail": 0
+		},
+		{
 			"uuid": "23DFAA08-877A-47CD-9F1A-28526CB6F3C8",
 			"type": "BufferGeometry",
 			"data": {
@@ -66,6 +102,16 @@
 					"radius": 1.900886
 				}
 			}
+		},
+		{
+			"uuid": "353A384D-BF44-4368-A3E6-86EE7DFBC528",
+			"type": "TorusKnotGeometry",
+			"radius": 1,
+			"tube": 0.256,
+			"tubularSegments": 100,
+			"radialSegments": 30,
+			"p": 2,
+			"q": 3
 		},
 		{
 			"uuid": "BB4DA4C4-1204-49F3-AF74-125B8A983F6F",
@@ -110,13 +156,79 @@
 			"height": 3.5,
 			"widthSegments": 1,
 			"heightSegments": 1
+		},
+		{
+			"uuid": "D705793C-2BD9-45B2-BC7A-7052B609F932",
+			"type": "TetrahedronGeometry",
+			"radius": 1,
+			"detail": 0
 		}],
 	"materials": [
 		{
 			"uuid": "EA16ABC9-C3A7-42A8-8659-C85D7049C693",
 			"type": "MeshStandardMaterial",
-			"color": 5180128,
+			"color": 3008255,
 			"roughness": 0.2,
+			"metalness": 0,
+			"emissive": 0,
+			"depthFunc": 3,
+			"depthTest": true,
+			"depthWrite": true,
+			"colorWrite": true,
+			"stencilWrite": false,
+			"stencilWriteMask": 255,
+			"stencilFunc": 519,
+			"stencilRef": 0,
+			"stencilFuncMask": 255,
+			"stencilFail": 7680,
+			"stencilZFail": 7680,
+			"stencilZPass": 7680
+		},
+		{
+			"uuid": "C22313F3-96A0-4DC8-B844-B7DF6FCEBB8B",
+			"type": "MeshStandardMaterial",
+			"color": 3069805,
+			"roughness": 0.28,
+			"metalness": 0,
+			"emissive": 0,
+			"depthFunc": 3,
+			"depthTest": true,
+			"depthWrite": true,
+			"colorWrite": true,
+			"stencilWrite": false,
+			"stencilWriteMask": 255,
+			"stencilFunc": 519,
+			"stencilRef": 0,
+			"stencilFuncMask": 255,
+			"stencilFail": 7680,
+			"stencilZFail": 7680,
+			"stencilZPass": 7680
+		},
+		{
+			"uuid": "57938CED-9C9E-4BAB-9B59-316DA1C5914F",
+			"type": "MeshStandardMaterial",
+			"color": 16716415,
+			"roughness": 0.22,
+			"metalness": 0,
+			"emissive": 0,
+			"depthFunc": 3,
+			"depthTest": true,
+			"depthWrite": true,
+			"colorWrite": true,
+			"stencilWrite": false,
+			"stencilWriteMask": 255,
+			"stencilFunc": 519,
+			"stencilRef": 0,
+			"stencilFuncMask": 255,
+			"stencilFail": 7680,
+			"stencilZFail": 7680,
+			"stencilZPass": 7680
+		},
+		{
+			"uuid": "BDD809B4-2B62-4466-BB96-949412D4A032",
+			"type": "MeshStandardMaterial",
+			"color": 15597372,
+			"roughness": 1,
 			"metalness": 0,
 			"emissive": 0,
 			"depthFunc": 3,
@@ -135,8 +247,28 @@
 		{
 			"uuid": "02F508D2-D734-4C02-A8AF-C6B49728C21B",
 			"type": "MeshStandardMaterial",
-			"color": 16716833,
+			"color": 16716853,
 			"roughness": 0.2,
+			"metalness": 0,
+			"emissive": 0,
+			"depthFunc": 3,
+			"depthTest": true,
+			"depthWrite": true,
+			"colorWrite": true,
+			"stencilWrite": false,
+			"stencilWriteMask": 255,
+			"stencilFunc": 519,
+			"stencilRef": 0,
+			"stencilFuncMask": 255,
+			"stencilFail": 7680,
+			"stencilZFail": 7680,
+			"stencilZPass": 7680
+		},
+		{
+			"uuid": "E6DEF96A-4E1B-4755-B491-3BB8E7C766AA",
+			"type": "MeshStandardMaterial",
+			"color": 5046472,
+			"roughness": 0.24,
 			"metalness": 0,
 			"emissive": 0,
 			"depthFunc": 3,
@@ -155,11 +287,10 @@
 		{
 			"uuid": "F8E85F1C-8457-4919-B525-198194E1D3A2",
 			"type": "MeshStandardMaterial",
-			"color": 16724736,
+			"color": 15658734,
 			"roughness": 1,
 			"metalness": 0,
-			"emissive": 16724736,
-			"emissiveIntensity": 0.4,
+			"emissive": 0,
 			"depthFunc": 3,
 			"depthTest": true,
 			"depthWrite": true,
@@ -176,11 +307,10 @@
 		{
 			"uuid": "6356BE15-4BAF-4E2E-A130-E44B637ED8C7",
 			"type": "MeshStandardMaterial",
-			"color": 30207,
+			"color": 15658734,
 			"roughness": 1,
 			"metalness": 0,
-			"emissive": 30207,
-			"emissiveIntensity": 0.4,
+			"emissive": 0,
 			"depthFunc": 3,
 			"depthTest": true,
 			"depthWrite": true,
@@ -247,6 +377,26 @@
 			"stencilFail": 7680,
 			"stencilZFail": 7680,
 			"stencilZPass": 7680
+		},
+		{
+			"uuid": "411A35AC-D86C-41CE-9B59-BB41929145DD",
+			"type": "MeshStandardMaterial",
+			"color": 3747828,
+			"roughness": 0.7,
+			"metalness": 0,
+			"emissive": 0,
+			"depthFunc": 3,
+			"depthTest": true,
+			"depthWrite": true,
+			"colorWrite": true,
+			"stencilWrite": false,
+			"stencilWriteMask": 255,
+			"stencilFunc": 519,
+			"stencilRef": 0,
+			"stencilFuncMask": 255,
+			"stencilFail": 7680,
+			"stencilZFail": 7680,
+			"stencilZPass": 7680
 		}],
 	"object": {
 		"uuid": "51F8DEE4-127F-49A6-8891-65E9E2143FCD",
@@ -270,9 +420,36 @@
 							"name": "bunny_10k"
 						},
 						"layers": 1,
-						"matrix": [6.073758,0,7.944146,0,-7.944146,0,6.073758,0,0,-10,0,0,2.351671,1.473053,-1.109345,1],
+						"matrix": [-13,0,0,0,0,0,-13,0,0,-13,0,0,-0.899963,1.887197,5.503608,1],
 						"geometry": "9A7A2332-0ED3-4D98-B185-EBA8CD72F589",
 						"material": "EA16ABC9-C3A7-42A8-8659-C85D7049C693"
+					},
+					{
+						"uuid": "E8FDCD89-3983-4FB6-AE17-E8407B14716F",
+						"type": "Mesh",
+						"name": "Torus",
+						"layers": 1,
+						"matrix": [0.794415,0,-0.607376,0,0,1,0,0,0.607376,0,0.794415,0,4.866956,2.044538,4.599397,1],
+						"geometry": "8E353D62-5EB0-4274-B9F2-58350EADC98C",
+						"material": "C22313F3-96A0-4DC8-B844-B7DF6FCEBB8B"
+					},
+					{
+						"uuid": "E0D419CC-F275-414D-8B36-FFF4AF44338D",
+						"type": "Mesh",
+						"name": "Tube",
+						"layers": 1,
+						"matrix": [0.821149,0.069552,0.56646,0,0,-0.992546,0.121869,0,0.570714,-0.100073,-0.815028,0,-8.059803,-0.532228,2.69722,1],
+						"geometry": "3A395EC9-56F3-4B10-A149-D465E7D5D0B9",
+						"material": "57938CED-9C9E-4BAB-9B59-316DA1C5914F"
+					},
+					{
+						"uuid": "5BD37F1D-9B6E-471D-8FB9-A74DA7D288BD",
+						"type": "Mesh",
+						"name": "Dodecahedron",
+						"layers": 1,
+						"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,-7.950936,2.055943,-2.143201,1],
+						"geometry": "F39AC4B4-52A6-434B-BE64-C6D398046763",
+						"material": "BDD809B4-2B62-4466-BB96-949412D4A032"
 					},
 					{
 						"uuid": "D73B4807-DE3A-4F1A-A242-D7058836FD7A",
@@ -282,16 +459,25 @@
 							"name": "monkey-subdivided"
 						},
 						"layers": 1,
-						"matrix": [-1.145694,0,-0.614316,0,0,1.3,0,0,0.614316,0,-1.145694,0,-4.232787,1.511545,5.472,1],
+						"matrix": [2,0,0,0,0,2,0,0,0,0,2,0,1.98341,2.185143,-4.813009,1],
 						"geometry": "23DFAA08-877A-47CD-9F1A-28526CB6F3C8",
 						"material": "02F508D2-D734-4C02-A8AF-C6B49728C21B"
+					},
+					{
+						"uuid": "1285A455-5445-4790-9DCC-62B4B040DB91",
+						"type": "Mesh",
+						"name": "TorusKnot",
+						"layers": 1,
+						"matrix": [0.901833,0,-0.432086,0,0,1,0,0,0.432086,0,0.901833,0,-3.961384,2.850822,-4.000021,1],
+						"geometry": "353A384D-BF44-4368-A3E6-86EE7DFBC528",
+						"material": "E6DEF96A-4E1B-4755-B491-3BB8E7C766AA"
 					},
 					{
 						"uuid": "18D1241E-CEC9-4C32-90A7-489F32373943",
 						"type": "Mesh",
 						"name": "Box",
 						"layers": 1,
-						"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,-2.11845,2,2.575034,1],
+						"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,-3.5,2,0.92,1],
 						"geometry": "BB4DA4C4-1204-49F3-AF74-125B8A983F6F",
 						"material": "F8E85F1C-8457-4919-B525-198194E1D3A2"
 					},
@@ -300,7 +486,7 @@
 						"type": "Mesh",
 						"name": "Box",
 						"layers": 1,
-						"matrix": [0,0,-1,0,0,1,0,0,1,0,0,0,-0.434757,2,0.945423,1],
+						"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,3.5,2,1.08,1],
 						"geometry": "3770B245-4EA0-4E94-8F04-1A6B9B6338AF",
 						"material": "6356BE15-4BAF-4E2E-A130-E44B637ED8C7"
 					},
@@ -327,7 +513,7 @@
 						"type": "Mesh",
 						"name": "portal",
 						"layers": 1,
-						"matrix": [0,0,-1,0,0,1,0,0,1,0,0,0,-0.350286,2,0.944871,1],
+						"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,-3.5,2,1,1],
 						"geometry": "35522BD0-6414-4CFC-898E-7123EE9726B7",
 						"material": "2181C0E8-E0C0-49DD-84E8-6A62E4627CD3"
 					},
@@ -336,7 +522,7 @@
 						"type": "Mesh",
 						"name": "portal",
 						"layers": 1,
-						"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,-2.121603,2.007956,2.651298,1],
+						"matrix": [-1,0,0,0,0,1,0,0,0,0,-1,0,3.5,2,1,1],
 						"geometry": "47B87906-9094-450D-9999-3DE3986FBF1A",
 						"material": "CB3EE89D-CAEF-4870-853B-ED2F2295B79B"
 					}]
@@ -378,9 +564,9 @@
 				"type": "PointLight",
 				"name": "PointLight",
 				"layers": 1,
-				"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,-1.721608,6.319382,1.115358,1],
-				"color": 16767672,
-				"intensity": 0.7,
+				"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,-0.86377,8.126183,1.614174,1],
+				"color": 16763027,
+				"intensity": 0.8,
 				"distance": 0,
 				"decay": 1,
 				"shadow": {
@@ -404,9 +590,9 @@
 				"type": "PointLight",
 				"name": "PointLight",
 				"layers": 1,
-				"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,13.662641,6.254101,0.995096,1],
-				"color": 16767690,
-				"intensity": 0.2,
+				"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,-3.107519,6.946729,-21.786682,1],
+				"color": 16754303,
+				"intensity": 0.1,
 				"distance": 0,
 				"decay": 1,
 				"shadow": {
@@ -430,9 +616,9 @@
 				"type": "PointLight",
 				"name": "PointLight",
 				"layers": 1,
-				"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,1.838048,7.641339,11.675351,1],
-				"color": 16768454,
-				"intensity": 0.2,
+				"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,-3.816828,7.641339,23.519338,1],
+				"color": 16763043,
+				"intensity": 0.1,
 				"distance": 0,
 				"decay": 1,
 				"shadow": {
@@ -450,6 +636,15 @@
 						"filmOffset": 0
 					}
 				}
+			},
+			{
+				"uuid": "15CE3E2E-56A1-4C89-B788-BF5FB248D26C",
+				"type": "Mesh",
+				"name": "Tetrahedron",
+				"layers": 1,
+				"matrix": [2,0,0,0,0,2,0,0,0,0,2,0,6.963182,1.837728,-1.893915,1],
+				"geometry": "D705793C-2BD9-45B2-BC7A-7052B609F932",
+				"material": "411A35AC-D86C-41CE-9B59-BB41929145DD"
 			}]
 	}
 }

@@ -1,16 +1,16 @@
 import * as THREE from "three";
 import SceneManager from "../../objects/SceneManager";
-import sceneJSON from "../../../static/scenes/portal_geometry.json";
+import sceneJSON from "../../../static/scenes/portal_recursive.json";
 import darkGridTexture from "../../../static/textures/dark_grid.png";
 
 // import { GUI } from "three/examples/jsm/libs/dat.gui.module";
 
-class BasicPortalsScene extends SceneManager {
+class PortalRecursiveScene extends SceneManager {
   constructor(canvas) {
     super(canvas, sceneJSON);
 
-    this.camera.position.set(-6, 4, 9);
-    this.controls.target = this.sceneObjects.portals[0].group.position.clone();
+    this.camera.position.set(0, 6, 6);
+    this.controls.target = this.scene.getObjectByName("bunny").position;
 
     this.sceneObjects.portals[0].destination = this.sceneObjects.portals[1];
     this.sceneObjects.portals[1].destination = this.sceneObjects.portals[0];
@@ -28,4 +28,4 @@ class BasicPortalsScene extends SceneManager {
   update() {}
 }
 
-export default BasicPortalsScene;
+export default PortalRecursiveScene;

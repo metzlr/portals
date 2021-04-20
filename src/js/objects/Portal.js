@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import Utils from "../Utils.js";
 
 class Portal {
   constructor(mesh, outline = false, destination = null) {
@@ -53,6 +54,47 @@ class Portal {
 
   get active() {
     return this._destination !== null;
+  }
+
+  getAlignedProjectionMatrix(inverseWorldMatrix, projectionMatrix) {
+    // Align near plane of camera's projection matrix to portal frame
+    // Souce: http://www.terathon.com/lengyel/Lengyel-Oblique.pdf
+    const pos = new THREE.Vector3();
+    const rotation = new THREE.Quaternion();
+    this.frameMesh.getWorldPosition(pos);
+    this.frameMesh.getWorldQuaternion(rotation);
+
+    // Default normal of PlaneGeometry (aka portal) is (0, 0, 1)
+    const norm = new THREE.Vector3(0, 0, 1).applyQuaternion(rotation);
+    let clipPlane = new THREE.Plane();
+    clipPlane.setFromNormalAndCoplanarPoint(norm, pos);
+    clipPlane.applyMatrix4(inverseWorldMatrix);
+    clipPlane = new THREE.Vector4(
+      clipPlane.normal.x,
+      clipPlane.normal.y,
+      clipPlane.normal.z,
+      clipPlane.constant
+    );
+    const newProjectionMatrix = projectionMatrix.clone();
+    const q = new THREE.Vector4();
+    q.x =
+      (Utils.sgn(clipPlane.x) + newProjectionMatrix.elements[8]) /
+      newProjectionMatrix.elements[0];
+    q.y =
+      (Utils.sgn(clipPlane.y) + newProjectionMatrix.elements[9]) /
+      newProjectionMatrix.elements[5];
+    q.z = -1.0;
+    q.w =
+      (1.0 + newProjectionMatrix.elements[10]) /
+      newProjectionMatrix.elements[14];
+
+    const m3 = clipPlane.multiplyScalar(2.0 / clipPlane.dot(q));
+    newProjectionMatrix.elements[2] = m3.x;
+    newProjectionMatrix.elements[6] = m3.y;
+    newProjectionMatrix.elements[10] = m3.z + 1.0;
+    newProjectionMatrix.elements[14] = m3.w;
+
+    return newProjectionMatrix;
   }
 }
 
