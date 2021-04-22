@@ -27,7 +27,7 @@ class SceneManager {
     this._tempCamera.matrixAutoUpdate = false;
 
     this._tempCameraHelper = new THREE.CameraHelper(this._tempCamera);
-    // this._tempCameraHelper.visible = true;
+    this._tempCameraHelper.visible = false;
     this.scene.add(this._tempCameraHelper);
 
     this.renderer = new THREE.WebGLRenderer({
