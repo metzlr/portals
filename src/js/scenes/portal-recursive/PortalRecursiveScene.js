@@ -10,7 +10,7 @@ class PortalRecursiveScene extends SceneManager {
     super(canvas, sceneJSON);
 
     this.camera.position.set(0, 6, 6);
-    this.controls.target = this.scene.getObjectByName("bunny").position;
+    this.controls.target = this.scene.getObjectByName("bunny").position.clone();
 
     this.sceneObjects.portals[0].destination = this.sceneObjects.portals[1];
     this.sceneObjects.portals[1].destination = this.sceneObjects.portals[0];

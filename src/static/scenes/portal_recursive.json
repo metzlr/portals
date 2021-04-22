@@ -101,10 +101,10 @@
 		{
 			"uuid": "F8E85F1C-8457-4919-B525-198194E1D3A2",
 			"type": "MeshStandardMaterial",
-			"color": 12763842,
+			"color": 394758,
 			"roughness": 1,
 			"metalness": 0,
-			"emissive": 12763842,
+			"emissive": 0,
 			"emissiveIntensity": 0.4,
 			"depthFunc": 3,
 			"depthTest": true,
@@ -122,10 +122,10 @@
 		{
 			"uuid": "6356BE15-4BAF-4E2E-A130-E44B637ED8C7",
 			"type": "MeshStandardMaterial",
-			"color": 12763842,
+			"color": 394758,
 			"roughness": 1,
 			"metalness": 0,
-			"emissive": 12763842,
+			"emissive": 0,
 			"emissiveIntensity": 0.4,
 			"depthFunc": 3,
 			"depthTest": true,
@@ -225,7 +225,7 @@
 						"type": "Mesh",
 						"name": "Box",
 						"layers": 1,
-						"matrix": [0,0,-1,0,0,1,0,0,1,0,0,0,5.917327,2,0.334559,1],
+						"matrix": [0,0,-1,0,0,1,0,0,1,0,0,0,6.927946,2,0.334559,1],
 						"geometry": "2944C4DF-9761-4C74-8E9B-EF8E342FB250",
 						"material": "F8E85F1C-8457-4919-B525-198194E1D3A2"
 					},
@@ -234,7 +234,7 @@
 						"type": "Mesh",
 						"name": "Box",
 						"layers": 1,
-						"matrix": [0,0,-1,0,0,1,0,0,1,0,0,0,-2.128759,2,0.393579,1],
+						"matrix": [0,0,-1,0,0,1,0,0,1,0,0,0,-3.26562,2,0.393579,1],
 						"geometry": "39573A2F-D694-4A40-8DBA-07F00F982020",
 						"material": "6356BE15-4BAF-4E2E-A130-E44B637ED8C7"
 					},
@@ -261,7 +261,7 @@
 						"type": "Mesh",
 						"name": "portal",
 						"layers": 1,
-						"matrix": [0,0,-1,0,0,1,0,0,1,0,0,0,-2.047205,2,0.394373,1],
+						"matrix": [0,0,-1,0,0,1,0,0,1,0,0,0,-3.177063,2,0.394373,1],
 						"geometry": "580104E3-731D-418F-8E2C-D45E14B65894",
 						"material": "2181C0E8-E0C0-49DD-84E8-6A62E4627CD3"
 					},
@@ -270,7 +270,7 @@
 						"type": "Mesh",
 						"name": "portal",
 						"layers": 1,
-						"matrix": [0,0,1,0,0,1,0,0,-1,0,0,0,5.836362,2.007956,0.342944,1],
+						"matrix": [0,0,1,0,0,1,0,0,-1,0,0,0,6.844826,2.007956,0.342944,1],
 						"geometry": "3F559FDC-4D31-4436-8FD4-743A17CACAEC",
 						"material": "CB3EE89D-CAEF-4870-853B-ED2F2295B79B"
 					}]

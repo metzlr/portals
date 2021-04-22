@@ -27,8 +27,7 @@ class SceneManager {
     this._tempCamera.matrixAutoUpdate = false;
 
     this._tempCameraHelper = new THREE.CameraHelper(this._tempCamera);
-    this._tempCameraHelper.visible = false;
-
+    // this._tempCameraHelper.visible = true;
     this.scene.add(this._tempCameraHelper);
 
     this.renderer = new THREE.WebGLRenderer({
@@ -66,6 +65,7 @@ class SceneManager {
         portals.add(this.sceneObjects.portals[i].group);
       }
     }
+    this.maxPortalRecursion = 2;
   }
 
   _update() {
@@ -87,101 +87,97 @@ class SceneManager {
 
   render() {
     this.renderer.clear();
-    this._recursivePortalRender();
-    // this._renderPortals();
-    // this.renderer.render(this.scene, this.camera);
+    this._recursivePortalRender(
+      this.camera.matrixWorld,
+      this.camera.projectionMatrix,
+      0
+    );
   }
 
-  _drawPortal(portal, cameraWorldMatrix, cameraProjectionMatrix) {
-    // const pos = new THREE.Vector3().setFromMatrixPosition(cameraWorldMatrix);
-    // const rotation = new THREE.Quaternion().setFromRotationMatrix(
-    //   cameraWorldMatrix
-    // );
-    // this._tempCamera.position.set(pos.x, pos.y, pos.z);
-    // this._tempCamera.rotation.setFromQuaternion(rotation);
-
-    // this._tempCamera.updateMatrix();
-    // this._tempCamera.updateMatrixWorld();
-    this._tempCamera.matrixWorld = cameraWorldMatrix;
-
-    this._tempCamera.projectionMatrix = cameraProjectionMatrix;
-    this._tempCamera.projectionMatrixInverse
-      .clone(cameraProjectionMatrix)
-      .invert();
-
-    this.renderer.render(portal.frameMesh, this._tempCamera);
-  }
-
-  _drawScene(cameraWorldMatrix, cameraProjectionMatrix) {
-    // const pos = new THREE.Vector3().setFromMatrixPosition(cameraWorldMatrix);
-    // const rotation = new THREE.Quaternion().setFromRotationMatrix(
-    //   cameraWorldMatrix
-    // );
-    // this._tempCamera.position.set(pos.x, pos.y, pos.z);
-    // this._tempCamera.rotation.setFromQuaternion(rotation);
-
-    // this._tempCamera.updateMatrix();
-    // this._tempCamera.updateMatrixWorld();
-    // this._tempCamera.matrixAutoUpdate = false;
-    this._tempCamera.matrixWorld = cameraWorldMatrix;
-
-    this._tempCamera.projectionMatrix = cameraProjectionMatrix;
-    this._tempCamera.projectionMatrixInverse
-      .clone(cameraProjectionMatrix)
-      .invert();
-
-    this.renderer.render(this.scene, this._tempCamera);
-  }
-
-  _recursivePortalRender() {
+  _recursivePortalRender(
+    cameraWorldMatrix,
+    cameraProjectionMatrix,
+    recursionLevel
+  ) {
     const gl = this.renderer.getContext();
-
-    gl.enable(gl.STENCIL_TEST);
-    gl.stencilOp(gl.INCR, gl.KEEP, gl.KEEP);
 
     // Render each of the portal interiors first
     for (let i = 0; i < this.sceneObjects.portals.length; i++) {
       const portal = this.sceneObjects.portals[i];
 
-      portal.frameMesh.visible = true;
-      // First we increment the stencil buffer inside the portal frame
-      // Disable color and depth buffers
+      // Disable writing to color and depth buffers
       gl.depthMask(false);
       gl.colorMask(false, false, false, false);
+
+      gl.disable(gl.DEPTH_TEST);
+      gl.enable(gl.STENCIL_TEST);
       // Enable writing to all stencil bits
       gl.stencilMask(0xff);
-      // Ensure stencil buffer always fails (so every pixel in portal will be incremented)
-      gl.stencilFunc(gl.NEVER, 0, 0);
-      // Start with empty stencil buffer
-      gl.clear(gl.STENCIL_BUFFER_BIT);
-      // this.renderer.render(portal.frameMesh, this.camera);
-      this._drawPortal(
-        portal,
-        this.camera.matrixWorld,
-        this.camera.projectionMatrix
-      );
+      // Fail stencil (i.e. increment value) only when inside portal of previous recursion level
+      gl.stencilFunc(gl.NOTEQUAL, recursionLevel, 0xff);
+      // Increment the stencil buffer when stencil func fails
+      gl.stencilOp(gl.INCR, gl.KEEP, gl.KEEP);
+      // This will increment the stencil buffer everywhere this portal lies within portal from previous recursionLevel
+      this._drawPortal(portal, cameraWorldMatrix, cameraProjectionMatrix);
 
-      // Now generate view matrix for camera looking out of portal desination
-      const destWorldMatrix = this._getOutportalCameraTransform(
+      // Now generate view matrix for portal destination
+      const destWorldMatrix = this._getDestPortalCameraWorldMatrix(
         portal.frameMesh.matrixWorld,
         portal.destination.frameMesh.matrixWorld,
-        this.camera.matrixWorld
-      );
-      const alignedProjectionMatrix = portal.destination.getAlignedProjectionMatrix(
-        destWorldMatrix.clone().invert(),
-        this.camera.projectionMatrix
+        cameraWorldMatrix
       );
 
-      // Render scene from perspective of portal destination (stencil ensures it only draws within the portal frame)
-      // No more writing to stencil
-      gl.stencilMask(false);
-      // Enable writing to depth and color buffers
-      gl.depthMask(true);
-      gl.colorMask(true, true, true, true);
-      // Only draw where ref <= stencil value (i.e. where stencil value is >= 1)
-      gl.stencilFunc(gl.LEQUAL, 1, 0xff);
-      // this.renderer.render(this.scene, this._tempCamera);
-      this._drawScene(destWorldMatrix, alignedProjectionMatrix);
+      if (recursionLevel === this.maxPortalRecursion) {
+        // If we've reached the maximum recursion depth, draw the final level
+
+        // Enable writing to depth/color buffers
+        gl.colorMask(true, true, true, true);
+        gl.depthMask(true);
+        // Enable depth testing
+        gl.enable(gl.DEPTH_TEST);
+        // Use fresh depth buffer
+        gl.clear(gl.DEPTH_BUFFER_BIT);
+
+        // Disable writing to stencil buffer
+        gl.stencilMask(0);
+        // Only draw inside the portal for this level (i.e. where stencil value == recursionLevel + 1)
+        gl.stencilFunc(gl.EQUAL, recursionLevel + 1, 0xff);
+
+        // Draw using aligned projection matrix
+        this._drawScene(
+          destWorldMatrix,
+          portal.destination.getAlignedProjectionMatrix(
+            destWorldMatrix.clone().invert(),
+            cameraProjectionMatrix
+          )
+        );
+      } else {
+        // Otherwise recurse using destination world matrix and algined projection matrix
+        this._recursivePortalRender(
+          destWorldMatrix,
+          portal.destination.getAlignedProjectionMatrix(
+            destWorldMatrix.clone().invert(),
+            cameraProjectionMatrix
+          ),
+          recursionLevel + 1
+        );
+      }
+
+      // Now we decrement stencil buffer to cleanup the incremented values.
+      // This is necessary so stencil values relative to this portal are reset for the next portal in the for-loop
+
+      // Disable color and depth masks
+      gl.colorMask(false, false, false, false);
+      gl.depthMask(false);
+      // Enable stencil test/writing
+      gl.enable(gl.STENCIL_TEST);
+      gl.stencilMask(0xff);
+      // Fail when inside this portals frame
+      gl.stencilFunc(gl.NOTEQUAL, recursionLevel + 1, 0xff);
+      // Decrement on fail
+      gl.stencilOp(gl.DECR, gl.KEEP, gl.KEEP);
+
+      this._drawPortal(portal, cameraWorldMatrix, cameraProjectionMatrix);
     }
 
     // Disable stencil test and writing to color/stencil buffers
@@ -189,191 +185,73 @@ class SceneManager {
     gl.stencilMask(0);
     gl.colorMask(false, false, false, false);
     // Now clear the depth buffer (it currently has depth data from portal cam's perspective) and update depth values for each portal frame
-    gl.clearDepth(1.0);
-    gl.clear(gl.DEPTH_BUFFER_BIT);
+    gl.enable(gl.DEPTH_TEST);
     gl.depthFunc(gl.ALWAYS);
+    gl.depthMask(true);
+    gl.clear(gl.DEPTH_BUFFER_BIT);
 
+    // Draw portals into depth buffer. This is necessary so they are correctly occluded in scene
     for (let i = 0; i < this.sceneObjects.portals.length; i++) {
       const portal = this.sceneObjects.portals[i];
       // Clear depth buffer and get depth values for the portal frame
-      this._drawPortal(
-        portal,
-        this.camera.matrixWorld,
-        this.camera.projectionMatrix
-      );
-      // Disable the portal frame so its Material doesn't show up when we rerender scene
-      portal.frameMesh.visible = false;
+      this._drawPortal(portal, cameraWorldMatrix, cameraProjectionMatrix);
+      // Disable the portal frame so its Material doesn't show up when we rerender scene in next step
     }
+    // Reset depth function to its default value
     gl.depthFunc(gl.LESS);
 
-    // Re-enable writing to color buffer for normal scene render
+    // Now we draw scene, but only within areas where stencil value >= recursionLevel
+    gl.enable(gl.STENCIL_TEST);
+    gl.stencilMask(0);
+    gl.stencilFunc(gl.LEQUAL, recursionLevel, 0xff);
+    // Re-enable writing to color buffer
     gl.colorMask(true, true, true, true);
 
-    this._drawScene(this.camera.matrixWorld, this.camera.projectionMatrix);
+    this._drawScene(cameraWorldMatrix, cameraProjectionMatrix);
   }
 
-  _getOutportalCameraTransform(
+  _drawPortal(portal, cameraWorldMatrix, cameraProjectionMatrix) {
+    this._tempCamera.matrixWorld = cameraWorldMatrix;
+    // NOTE: no need to manually update camera.matrixWorldInverse since the renderer will automatically do that
+
+    this._tempCamera.projectionMatrix = cameraProjectionMatrix;
+    this._tempCamera.projectionMatrixInverse
+      .copy(cameraProjectionMatrix)
+      .invert();
+
+    portal.frameMesh.visible = true;
+    this.renderer.render(portal.frameMesh, this._tempCamera);
+    // Hide portal material after render since we don't want to actually see it
+    portal.frameMesh.visible = false;
+  }
+
+  _drawScene(cameraWorldMatrix, cameraProjectionMatrix) {
+    this._tempCamera.matrixWorld = cameraWorldMatrix;
+    // NOTE: no need to manually update camera.matrixWorldInverse since the renderer will automatically do that
+
+    this._tempCamera.projectionMatrix = cameraProjectionMatrix;
+    this._tempCamera.projectionMatrixInverse
+      .copy(cameraProjectionMatrix)
+      .invert();
+
+    this.renderer.render(this.scene, this._tempCamera);
+  }
+
+  _getDestPortalCameraWorldMatrix(
     inPortalWorldMatrix,
     outPortalWorldMatrix,
-    mainCameraWorldMatrix
+    cameraWorldMatrix
   ) {
     const outCameraTransform = inPortalWorldMatrix
       .clone()
       .invert()
-      .multiply(mainCameraWorldMatrix);
+      .multiply(cameraWorldMatrix);
 
     outCameraTransform.premultiply(new THREE.Matrix4().makeRotationY(Math.PI));
     outCameraTransform.premultiply(outPortalWorldMatrix);
 
     return outCameraTransform;
   }
-
-  // _alignedCameraProjectionMatrix(portal, camera) {
-  //   // Align near plane of portal cam to frame of portal
-  //   // Souce: http://www.terathon.com/lengyel/Lengyel-Oblique.pdf
-  //   const pos = new THREE.Vector3();
-  //   const rotation = new THREE.Vector3();
-  //   portal.destination.frameMesh.getWorldPosition(pos);
-  //   portal.destination.frameMesh.getWorldQuaternion(rotation);
-
-  //   // Default normal of PlaneGeometry (aka portal) is (0, 0, 1)
-  //   const norm = new THREE.Vector3(0, 0, 1).applyQuaternion(rotation);
-  //   let clipPlane = new THREE.Plane();
-  //   clipPlane.setFromNormalAndCoplanarPoint(norm, pos);
-  //   clipPlane.applyMatrix4(this._tempCamera.matrixWorldInverse);
-  //   clipPlane = new THREE.Vector4(
-  //     clipPlane.normal.x,
-  //     clipPlane.normal.y,
-  //     clipPlane.normal.z,
-  //     clipPlane.constant
-  //   );
-  //   const q = new THREE.Vector4();
-  //   q.x =
-  //     (sgn(clipPlane.x) + projectionMatrix.elements[8]) /
-  //     projectionMatrix.elements[0];
-  //   q.y =
-  //     (sgn(clipPlane.y) + projectionMatrix.elements[9]) /
-  //     projectionMatrix.elements[5];
-  //   q.z = -1.0;
-  //   q.w = (1.0 + projectionMatrix.elements[10]) / projectionMatrix.elements[14];
-
-  //   const m3 = clipPlane.multiplyScalar(2.0 / clipPlane.dot(q));
-  //   projectionMatrix.elements[2] = m3.x;
-  //   projectionMatrix.elements[6] = m3.y;
-  //   projectionMatrix.elements[10] = m3.z + 1.0;
-  //   projectionMatrix.elements[14] = m3.w;
-
-  //   this._tempCamera.projectionMatrixInverse.copy(projectionMatrix).invert();
-  // }
-
-  // _renderPortals() {
-  //   const gl = this.renderer.getContext();
-
-  //   gl.enable(gl.STENCIL_TEST);
-  //   gl.stencilOp(gl.INCR, gl.KEEP, gl.KEEP);
-
-  //   // Render each of the portal interiors first
-  //   for (let i = 0; i < this.sceneObjects.portals.length; i++) {
-  //     const portal = this.sceneObjects.portals[i];
-
-  //     portal.frameMesh.visible = true;
-  //     // First we increment the stencil buffer inside the portal frame
-  //     // Disable color and depth buffers
-  //     gl.depthMask(false);
-  //     gl.colorMask(false, false, false, false);
-  //     // Enable writing to all stencil bits
-  //     gl.stencilMask(0xff);
-  //     // Ensure stencil buffer always fails (so every pixel in portal will be incremented)
-  //     gl.stencilFunc(gl.NEVER, 0, 0);
-  //     // Start with empty stencil buffer
-  //     gl.clear(gl.STENCIL_BUFFER_BIT);
-  //     this.renderer.render(portal.frameMesh, this.camera);
-
-  //     // Now generate view matrix for camera looking out of portal desination
-  //     const portalCamTransform = this._getOutportalCameraTransform(
-  //       portal.frameMesh.matrixWorld,
-  //       portal.destination.frameMesh.matrixWorld,
-  //       this.camera.matrixWorld
-  //     );
-  //     const pos = new THREE.Vector3().setFromMatrixPosition(portalCamTransform);
-  //     const rotation = new THREE.Quaternion().setFromRotationMatrix(
-  //       portalCamTransform
-  //     );
-  //     this._tempCamera.position.set(pos.x, pos.y, pos.z);
-  //     this._tempCamera.rotation.setFromQuaternion(rotation);
-
-  //     // Update camera matrices (needed immediately for next step)
-  //     this._tempCamera.updateMatrix();
-  //     this._tempCamera.updateMatrixWorld();
-  //     this._tempCamera.updateProjectionMatrix();
-
-  //     // Align near plane of portal cam to frame of portal
-  //     // Souce: http://www.terathon.com/lengyel/Lengyel-Oblique.pdf
-  //     portal.destination.frameMesh.getWorldPosition(pos);
-  //     // Default normal of PlaneGeometry (aka portal) is (0, 0, 1)
-  //     portal.destination.frameMesh.getWorldQuaternion(rotation);
-  //     const norm = new THREE.Vector3(0, 0, 1).applyQuaternion(rotation);
-  //     let clipPlane = new THREE.Plane();
-  //     clipPlane.setFromNormalAndCoplanarPoint(norm, pos);
-  //     clipPlane.applyMatrix4(this._tempCamera.matrixWorldInverse);
-  //     clipPlane = new THREE.Vector4(
-  //       clipPlane.normal.x,
-  //       clipPlane.normal.y,
-  //       clipPlane.normal.z,
-  //       clipPlane.constant
-  //     );
-  //     const q = new THREE.Vector4();
-  //     const projectionMatrix = this._tempCamera.projectionMatrix;
-  //     q.x =
-  //       (sgn(clipPlane.x) + projectionMatrix.elements[8]) /
-  //       projectionMatrix.elements[0];
-  //     q.y =
-  //       (sgn(clipPlane.y) + projectionMatrix.elements[9]) /
-  //       projectionMatrix.elements[5];
-  //     q.z = -1.0;
-  //     q.w =
-  //       (1.0 + projectionMatrix.elements[10]) / projectionMatrix.elements[14];
-
-  //     const m3 = clipPlane.multiplyScalar(2.0 / clipPlane.dot(q));
-  //     projectionMatrix.elements[2] = m3.x;
-  //     projectionMatrix.elements[6] = m3.y;
-  //     projectionMatrix.elements[10] = m3.z + 1.0;
-  //     projectionMatrix.elements[14] = m3.w;
-
-  //     this._tempCamera.projectionMatrixInverse.copy(projectionMatrix).invert();
-
-  //     // Render scene from perspective of portal destination (stencil ensures it only draws within the portal frame)
-  //     // No more writing to stencil
-  //     gl.stencilMask(false);
-  //     // Enable writing to depth and color buffers
-  //     gl.depthMask(true);
-  //     gl.colorMask(true, true, true, true);
-  //     // Only draw where ref <= stencil value (i.e. where stencil value is >= 1)
-  //     gl.stencilFunc(gl.LEQUAL, 1, 0xff);
-  //     this.renderer.render(this.scene, this._tempCamera);
-  //   }
-
-  //   // Disable stencil test and writing to color/stencil buffers
-  //   gl.disable(gl.STENCIL_TEST);
-  //   gl.stencilMask(0);
-  //   gl.colorMask(false, false, false, false);
-  //   // Now clear the depth buffer (it currently has depth data from portal cam's perspective) and update depth values for each portal frame
-  //   gl.clearDepth(1.0);
-  //   gl.clear(gl.DEPTH_BUFFER_BIT);
-  //   gl.depthFunc(gl.ALWAYS);
-
-  //   for (let i = 0; i < this.sceneObjects.portals.length; i++) {
-  //     const portal = this.sceneObjects.portals[i];
-  //     // Clear depth buffer and get depth values for the portal frame
-  //     this.renderer.render(portal.frameMesh, this.camera);
-  //     // Disable the portal frame so its Material doesn't show up when we rerender scene
-  //     portal.frameMesh.visible = false;
-  //   }
-  //   gl.depthFunc(gl.LESS);
-
-  //   // Re-enable writing to color buffer for normal scene render
-  //   gl.colorMask(true, true, true, true);
-  // }
 
   _resizeRendererToDisplaySize(renderer) {
     const canvas = renderer.domElement;

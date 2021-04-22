@@ -56,7 +56,8 @@ class Portal {
     return this._destination !== null;
   }
 
-  getAlignedProjectionMatrix(inverseWorldMatrix, projectionMatrix) {
+  // View matrix = inverse world matrix
+  getAlignedProjectionMatrix(viewMatrix, projectionMatrix) {
     // Align near plane of camera's projection matrix to portal frame
     // Souce: http://www.terathon.com/lengyel/Lengyel-Oblique.pdf
     const pos = new THREE.Vector3();
@@ -68,7 +69,7 @@ class Portal {
     const norm = new THREE.Vector3(0, 0, 1).applyQuaternion(rotation);
     let clipPlane = new THREE.Plane();
     clipPlane.setFromNormalAndCoplanarPoint(norm, pos);
-    clipPlane.applyMatrix4(inverseWorldMatrix);
+    clipPlane.applyMatrix4(viewMatrix);
     clipPlane = new THREE.Vector4(
       clipPlane.normal.x,
       clipPlane.normal.y,
