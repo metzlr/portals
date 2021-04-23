@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import SceneManager from "../../objects/SceneManager";
-import sceneJSON from "../../../static/scenes/portal_recursive.json";
+import sceneJSON from "../../../static/scenes/portal_double.json";
 import darkGridTexture from "../../../static/textures/dark_grid.png";
 
 // import { GUI } from "three/examples/jsm/libs/dat.gui.module";

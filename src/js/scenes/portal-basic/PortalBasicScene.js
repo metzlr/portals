@@ -10,7 +10,7 @@ class BasicPortalsScene extends SceneManager {
     super(canvas, sceneJSON);
 
     this.camera.position.set(-6, 4, 9);
-    this.controls.target = this.sceneObjects.portals[0].group.position.clone();
+    this.controls.target = this.sceneObjects.portals[0].frameMesh.position.clone();
 
     this.sceneObjects.portals[0].destination = this.sceneObjects.portals[1];
     this.sceneObjects.portals[1].destination = this.sceneObjects.portals[0];
