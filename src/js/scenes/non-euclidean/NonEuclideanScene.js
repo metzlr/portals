@@ -4,7 +4,7 @@ import sceneJSON from "../../../static/scenes/non_euclidean.json";
 
 // import { GUI } from "three/examples/jsm/libs/dat.gui.module";
 
-class NonEuclideanScene extends SceneManager {
+class NonEuclideanSceneScene extends SceneManager {
   constructor(canvas) {
     super(canvas, sceneJSON);
 
@@ -58,4 +58,4 @@ class NonEuclideanScene extends SceneManager {
   update() {}
 }
 
-export default NonEuclideanScene;
+export default NonEuclideanSceneScene;

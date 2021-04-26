@@ -4,6 +4,7 @@ import PortalTraveller from "./PortalTraveller";
 import Portal from "./Portal.js";
 import Stats from "three/examples/jsm/libs/stats.module";
 import SceneGUI from "./SceneGUI";
+import { Vector3 } from "three";
 
 class SceneManager {
   constructor(canvas, sceneJSON) {
@@ -21,9 +22,6 @@ class SceneManager {
       0.005,
       2000
     );
-    this.camera.position.set(0, 0, 10);
-    // Camera matrices are manually updated
-    this.camera.matrixAutoUpdate = false;
 
     this._tempCamera = new THREE.PerspectiveCamera(
       75,
@@ -51,10 +49,6 @@ class SceneManager {
     this.stats = new Stats();
     this.stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
     document.body.appendChild(this.stats.dom);
-
-    // this.controls = new OrbitControls(this.camera, this.renderer.domElement);
-    // this.controls.zoomSpeed = 0.25;
-    // this.controls.rotateSpeed = 0.5;
 
     this.controls = new FirstPersonControls(
       this.camera,
@@ -132,8 +126,10 @@ class SceneManager {
       if (
         !portal.mesh.userData ||
         portal.mesh.userData.destination === undefined
-      )
+      ) {
+        console.warn("Portal missing destination");
         return;
+      }
       portal.destination = portalMap.get(portal.mesh.userData.destination);
     });
 
@@ -141,7 +137,8 @@ class SceneManager {
   }
 
   setPortals(portals) {
-    this._portals = portals;
+    // Make shallow copy
+    this._portals = [...portals];
 
     for (let i = 0; i < this._travellers.length; i++) {
       this._travellers[i].setPortals(this._portals);
@@ -184,7 +181,7 @@ class SceneManager {
     return this._collidables;
   }
 
-  _update() {
+  update() {
     this.deltaTime = this._clock.getDelta(); // Get time since last frame
 
     if (this._resizeRendererToDisplaySize(this.renderer)) {
@@ -203,9 +200,6 @@ class SceneManager {
         this._travellers[i].update(this._portals);
       }
     }
-
-    this.update();
-    this.render();
   }
 
   render() {
@@ -257,30 +251,28 @@ class SceneManager {
       }
 
       // Check if portal is visible from camera. If not, skip it
-      // if (!this._frustum.intersectsObject(portal.mesh)) {
-      //   continue;
-      // }
+      if (!this._frustum.intersectsObject(portal.mesh)) {
+        continue;
+      }
 
       gl.colorMask(false, false, false, false);
       gl.enable(gl.DEPTH_TEST);
-      // gl.disable(gl.DEPTH_TEST);
 
       gl.depthMask(true);
       gl.depthFunc(gl.LESS);
       gl.disable(gl.STENCIL_TEST);
       gl.stencilMask(0);
-      gl.clear(gl.DEPTH_BUFFER_BIT);
+
+      // No need to clear first iterations
+      if (recursionLevel !== 0) {
+        gl.clear(gl.DEPTH_BUFFER_BIT);
+      }
 
       for (let j = 0; j < this._portals.length; j++) {
         if (j === i) continue;
         const otherPortal = this._portals[j];
         if (otherPortal === skipPortal) continue;
-        this._draw(
-          otherPortal.mesh,
-          cameraWorldMatrix,
-          cameraProjectionMatrix,
-          true
-        );
+        this._draw(otherPortal.mesh, cameraWorldMatrix, cameraProjectionMatrix);
       }
 
       // Disable writing to color and depth buffers
@@ -291,10 +283,8 @@ class SceneManager {
       gl.stencilMask(0xff);
       // Fail stencil (i.e. increment value) only when inside portal of previous recursion level
       gl.stencilFunc(gl.EQUAL, recursionLevel, 0xff);
-      // gl.stencilFunc(gl.NOTEQUAL, recursionLevel, 0xff);
       // Increment the stencil buffer when stencil func fails
       gl.stencilOp(gl.KEEP, gl.KEEP, gl.INCR);
-      // gl.stencilOp(gl.INCR, gl.KEEP, gl.KEEP);
       // This will increment the stencil buffer everywhere this portal lies within portal from previous recursionLevel
       this._draw(portal.mesh, cameraWorldMatrix, cameraProjectionMatrix);
 
@@ -331,7 +321,7 @@ class SceneManager {
             destWorldMatrixInverse,
             cameraProjectionMatrix
           ),
-          portal.destination.mesh
+          portal.destination.mesh // We can skip rendering the portal destination when drawing from its perspective
         );
       } else {
         // Otherwise recurse using destination world matrix and algined projection matrix
@@ -344,7 +334,7 @@ class SceneManager {
             cameraProjectionMatrix
           ),
           recursionLevel + 1,
-          portal.destination // We can skip rendering the portal destination when recursing from its perspective
+          portal.destination // We can skip rendering the portal destination when drawing from its perspective
         );
       }
 
@@ -376,19 +366,16 @@ class SceneManager {
     gl.depthMask(true);
     gl.clear(gl.DEPTH_BUFFER_BIT);
 
-    // if (skipPortal !== null) skipPortal.visible = false;
     // Draw portals into depth buffer. This is necessary so they are correctly occluded in scene
     for (let i = 0; i < this._portals.length; i++) {
       const portal = this._portals[i];
-      // Skip portal we're who's perspective we're currently rendering
-      if (portal === skipPortal) {
+      // Skip portal we're who's perspective we're currently rendering. Also skip any portals w/out destinations (since they weren't actually rendered as portals)
+      if (portal === skipPortal || portal.destination === null) {
         continue;
       }
       // Clear depth buffer and get depth values for the portal frame
       this._draw(portal.mesh, cameraWorldMatrix, cameraProjectionMatrix);
-      // Disable the portal frame so its Material doesn't show up when we rerender scene in next step
     }
-    // Reset depth function to its default value
 
     // Now we draw scene, but only within areas where stencil value >= recursionLevel
     gl.enable(gl.STENCIL_TEST);
@@ -459,10 +446,6 @@ class SceneManager {
     }
     return needResize;
   }
-
-  /* Overridable methods */
-
-  update() {}
 }
 
 export default SceneManager;

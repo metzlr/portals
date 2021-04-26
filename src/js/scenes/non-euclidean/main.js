@@ -1,8 +1,8 @@
-import NonEuclideanScene from "./NonEuclidean.js";
+import NonEuclideanSceneScene from "./NonEuclideanScene.js";
 
 (function () {
   const canvas = document.getElementById("main-canvas");
-  const sceneManager = new NonEuclideanScene(canvas);
+  const sceneManager = new NonEuclideanSceneScene(canvas);
 
   renderScene();
 

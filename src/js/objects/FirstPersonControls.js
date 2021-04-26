@@ -1,6 +1,5 @@
 import * as THREE from "three";
 import { PointerLockControls } from "three/examples/jsm/controls/PointerLockControls.js";
-import Utils from "../Utils";
 
 export default class FirstPersonControls {
   constructor(camera, scene, domElement) {
@@ -95,11 +94,12 @@ export default class FirstPersonControls {
     document.addEventListener("keydown", onKeyDown);
     document.addEventListener("keyup", onKeyUp);
 
+    this.distToFeet = 3;
     this.raycaster = new THREE.Raycaster(
       new THREE.Vector3(),
       new THREE.Vector3(0, -1, 0),
       0,
-      3
+      this.distToFeet
     );
 
     scene.add(this._controls.getObject());
@@ -109,7 +109,7 @@ export default class FirstPersonControls {
     if (this._controls.isLocked === true) {
       // Test for collision below
 
-      let onObject = false;
+      let onObject = null;
       if (collidables.length > 0 && !this.freeCam) {
         this.raycaster.ray.origin.copy(this._controls.getObject().position);
         // this.raycaster.ray.origin.y -= 10;
@@ -117,14 +117,14 @@ export default class FirstPersonControls {
           collidables,
           true
         );
-        onObject = intersections.length > 0;
+        onObject = intersections.length > 0 ? intersections[0] : null;
       }
 
       this.velocity.x -= this.velocity.x * 10 * deltaTime;
       this.velocity.z -= this.velocity.z * 10 * deltaTime;
       if (!this.freeCam) {
         // Gravity
-        this.velocity.y -= 35 * deltaTime;
+        this.velocity.y -= 50 * deltaTime;
       } else {
         this.velocity.y -= this.velocity.y * 15 * deltaTime;
       }
@@ -144,9 +144,11 @@ export default class FirstPersonControls {
         this.velocity.y -= this.direction.y * 100 * deltaTime;
       }
 
-      if (!this.freeCam && onObject === true) {
+      if (!this.freeCam && onObject !== null) {
         this.velocity.y = Math.max(0, this.velocity.y);
         this.canJump = true;
+        this._controls.getObject().position.y =
+          onObject.point.y + this.distToFeet;
       }
 
       this._controls.moveRight(-this.velocity.x * deltaTime);
