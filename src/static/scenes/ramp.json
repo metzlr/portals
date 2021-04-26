@@ -158,110 +158,18 @@
 		"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],
 		"children": [
 			{
-				"uuid": "96FECFDD-8332-4A04-9707-9B72537D4D14",
-				"type": "Group",
-				"name": "world",
-				"layers": 1,
-				"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],
-				"children": [
-					{
-						"uuid": "04115B60-CEEA-48B8-910B-4BD9350ECCE7",
-						"type": "Mesh",
-						"name": "p_1",
-						"userData": {
-							"destination": "p_2"
-						},
-						"layers": 1,
-						"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,-2.35,8.232504,-8.494387,1],
-						"geometry": "7A1571CD-6659-4DC4-9849-80C4650B8B54",
-						"material": "2181C0E8-E0C0-49DD-84E8-6A62E4627CD3"
-					},
-					{
-						"uuid": "7B1E7B15-C6BA-4ACA-BD2A-B4F6FD1B0A82",
-						"type": "Mesh",
-						"name": "p_2",
-						"userData": {
-							"destination": "p_1"
-						},
-						"layers": 1,
-						"matrix": [-1,0,0,0,0,1,0,0,0,0,-1,0,-2.35,2.007956,7.971022,1],
-						"geometry": "3F559FDC-4D31-4436-8FD4-743A17CACAEC",
-						"material": "CB3EE89D-CAEF-4870-853B-ED2F2295B79B"
-					},
-					{
-						"uuid": "53881F7E-AA9B-4994-8A77-07BB8CC8484A",
-						"type": "Mesh",
-						"name": "Plane",
-						"layers": 1,
-						"matrix": [1,0,0,0,0,0.707107,-0.707107,0,0,0.707107,0.707107,0,-2.334581,2.942295,0.038153,1],
-						"geometry": "81062CAD-81C9-4CE0-82E7-7EF16E757B4E",
-						"material": "E762D5F3-82A2-4B5E-8752-14F516E7C560"
-					},
-					{
-						"uuid": "64603094-819E-4B95-B760-F93A7D3D0BE5",
-						"type": "Mesh",
-						"name": "Plane",
-						"layers": 1,
-						"matrix": [1,0,0,0,0,0,-1,0,0,1,0,0,-2.35,6.480814,-5.989776,1],
-						"geometry": "B027BAE6-A59E-49A4-9401-9FF538D9F421",
-						"material": "9EBB3CC9-5410-4B79-B2FD-4902A2767F5B"
-					},
-					{
-						"uuid": "39B75D44-0232-45B8-87EF-3ED721A45B1F",
-						"type": "Mesh",
-						"name": "floor",
-						"receiveShadow": true,
-						"layers": 1,
-						"matrix": [1,0,0,0,0,0,-1,0,0,1,0,0,0,0,0,1],
-						"geometry": "302F654C-6AF8-4052-A3F3-468E8A80D032",
-						"material": "BB0CE5A4-6579-4368-B497-A059A664357C"
-					}]
-			},
-			{
-				"uuid": "6E5910CC-FE57-4455-876A-81C5B30D6A6F",
-				"type": "AmbientLight",
-				"name": "lightAmbient",
-				"layers": 1,
-				"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,0,12.209619,0,1],
-				"color": 16762272,
-				"intensity": 0.02
-			},
-			{
-				"uuid": "6D2AC760-766D-41FA-9813-246332AAD4A1",
-				"type": "DirectionalLight",
-				"name": "lightDirectional",
-				"layers": 1,
-				"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,4.684106,11.911274,1.931083,1],
-				"color": 16773091,
-				"intensity": 0,
-				"shadow": {
-					"camera": {
-						"uuid": "C9AF311C-543A-423B-95DC-B1C618E71F67",
-						"type": "OrthographicCamera",
-						"layers": 1,
-						"zoom": 1,
-						"left": -5,
-						"right": 5,
-						"top": 5,
-						"bottom": -5,
-						"near": 0.5,
-						"far": 500
-					}
-				}
-			},
-			{
-				"uuid": "BAE49556-2A1B-4657-B00D-A7650B0AC36C",
+				"uuid": "B9DEEA5A-242B-41FD-B94B-354180F632B1",
 				"type": "PointLight",
 				"name": "PointLight",
 				"layers": 1,
-				"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,-14.060628,9.596169,-6.069563,1],
-				"color": 16767672,
-				"intensity": 0.6,
+				"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,13.617975,8.200372,-6.303033,1],
+				"color": 16768454,
+				"intensity": 0.3,
 				"distance": 0,
 				"decay": 1,
 				"shadow": {
 					"camera": {
-						"uuid": "12BF31FC-E7C3-4E77-90E5-72F1599C97A3",
+						"uuid": "AEEFE835-6C61-4DC2-9674-D5471C74BCDE",
 						"type": "PerspectiveCamera",
 						"layers": 1,
 						"fov": 90,
@@ -302,18 +210,18 @@
 				}
 			},
 			{
-				"uuid": "B9DEEA5A-242B-41FD-B94B-354180F632B1",
+				"uuid": "BAE49556-2A1B-4657-B00D-A7650B0AC36C",
 				"type": "PointLight",
 				"name": "PointLight",
 				"layers": 1,
-				"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,13.617975,8.200372,-6.303033,1],
-				"color": 16768454,
-				"intensity": 0.3,
+				"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,-14.060628,9.596169,-6.069563,1],
+				"color": 16767672,
+				"intensity": 0.6,
 				"distance": 0,
 				"decay": 1,
 				"shadow": {
 					"camera": {
-						"uuid": "AEEFE835-6C61-4DC2-9674-D5471C74BCDE",
+						"uuid": "12BF31FC-E7C3-4E77-90E5-72F1599C97A3",
 						"type": "PerspectiveCamera",
 						"layers": 1,
 						"fov": 90,
@@ -326,6 +234,107 @@
 						"filmOffset": 0
 					}
 				}
+			},
+			{
+				"uuid": "6D2AC760-766D-41FA-9813-246332AAD4A1",
+				"type": "DirectionalLight",
+				"name": "lightDirectional",
+				"layers": 1,
+				"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,4.684106,11.911274,1.931083,1],
+				"color": 16773091,
+				"intensity": 0,
+				"shadow": {
+					"camera": {
+						"uuid": "C9AF311C-543A-423B-95DC-B1C618E71F67",
+						"type": "OrthographicCamera",
+						"layers": 1,
+						"zoom": 1,
+						"left": -5,
+						"right": 5,
+						"top": 5,
+						"bottom": -5,
+						"near": 0.5,
+						"far": 500
+					}
+				}
+			},
+			{
+				"uuid": "6E5910CC-FE57-4455-876A-81C5B30D6A6F",
+				"type": "AmbientLight",
+				"name": "lightAmbient",
+				"layers": 1,
+				"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,0,12.209619,0,1],
+				"color": 16762272,
+				"intensity": 0.02
+			},
+			{
+				"uuid": "96FECFDD-8332-4A04-9707-9B72537D4D14",
+				"type": "Group",
+				"name": "world",
+				"layers": 1,
+				"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],
+				"children": [
+					{
+						"uuid": "04115B60-CEEA-48B8-910B-4BD9350ECCE7",
+						"type": "Mesh",
+						"name": "p_1",
+						"userData": {
+							"destination": "p_2"
+						},
+						"layers": 1,
+						"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,-2.35,8.232504,-8.494387,1],
+						"geometry": "7A1571CD-6659-4DC4-9849-80C4650B8B54",
+						"material": "2181C0E8-E0C0-49DD-84E8-6A62E4627CD3"
+					},
+					{
+						"uuid": "7B1E7B15-C6BA-4ACA-BD2A-B4F6FD1B0A82",
+						"type": "Mesh",
+						"name": "p_2",
+						"userData": {
+							"destination": "p_1"
+						},
+						"layers": 1,
+						"matrix": [-1,0,0,0,0,1,0,0,0,0,-1,0,-2.35,2.007956,7.971022,1],
+						"geometry": "3F559FDC-4D31-4436-8FD4-743A17CACAEC",
+						"material": "CB3EE89D-CAEF-4870-853B-ED2F2295B79B"
+					},
+					{
+						"uuid": "53881F7E-AA9B-4994-8A77-07BB8CC8484A",
+						"type": "Mesh",
+						"name": "Plane",
+						"userData": {
+							"collidable": true
+						},
+						"layers": 1,
+						"matrix": [1,0,0,0,0,0.707107,-0.707107,0,0,0.707107,0.707107,0,-2.334581,2.942295,0.038153,1],
+						"geometry": "81062CAD-81C9-4CE0-82E7-7EF16E757B4E",
+						"material": "E762D5F3-82A2-4B5E-8752-14F516E7C560"
+					},
+					{
+						"uuid": "64603094-819E-4B95-B760-F93A7D3D0BE5",
+						"type": "Mesh",
+						"name": "Plane",
+						"userData": {
+							"collidable": true
+						},
+						"layers": 1,
+						"matrix": [1,0,0,0,0,0,-1,0,0,1,0,0,-2.35,6.480814,-5.989776,1],
+						"geometry": "B027BAE6-A59E-49A4-9401-9FF538D9F421",
+						"material": "9EBB3CC9-5410-4B79-B2FD-4902A2767F5B"
+					},
+					{
+						"uuid": "39B75D44-0232-45B8-87EF-3ED721A45B1F",
+						"type": "Mesh",
+						"name": "floor",
+						"receiveShadow": true,
+						"userData": {
+							"collidable": true
+						},
+						"layers": 1,
+						"matrix": [1,0,0,0,0,0,-1,0,0,1,0,0,0,0,0,1],
+						"geometry": "302F654C-6AF8-4052-A3F3-468E8A80D032",
+						"material": "BB0CE5A4-6579-4368-B497-A059A664357C"
+					}]
 			}]
 	}
 }

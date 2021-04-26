@@ -1,7 +1,7 @@
 import * as THREE from "three";
-import SceneManager from "../../objects/SceneManager";
-import sceneJSON from "../../../static/scenes/ramp.json";
-import darkGridTexture from "../../../static/textures/dark_grid.png";
+import SceneManager from "../objects/SceneManager";
+import sceneJSON from "../../static/scenes/tunnels.json";
+import darkGridTexture from "../../static/textures/dark_grid.png";
 
 (function () {
   const canvas = document.getElementById("main-canvas");

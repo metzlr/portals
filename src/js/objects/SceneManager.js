@@ -4,7 +4,6 @@ import PortalTraveller from "./PortalTraveller";
 import Portal from "./Portal.js";
 import Stats from "three/examples/jsm/libs/stats.module";
 import SceneGUI from "./SceneGUI";
-import { Vector3 } from "three";
 
 class SceneManager {
   constructor(canvas, sceneJSON) {
@@ -32,8 +31,6 @@ class SceneManager {
     // Since we'll be updating tempCamera matrices anyway, no need for auto updates
     this._tempCamera.matrixAutoUpdate = false;
 
-    this._frustum = new THREE.Frustum();
-
     this.renderer = new THREE.WebGLRenderer({
       canvas: canvas,
       antialias: true,
@@ -56,6 +53,7 @@ class SceneManager {
       this.renderer.domElement
     );
     this._collidables = [];
+    this._portals = [];
     this._travellers = [new PortalTraveller(this.camera)];
 
     /* ----- PROPERTIES ----- */
@@ -68,6 +66,9 @@ class SceneManager {
     this.portalTeleporting = true;
     this._doubleSidedPortals = false;
     this.drawPortalCameras = false;
+
+    // Extract userData variables from scene object
+    this.extractSceneOptionsFromObject(this.scene);
 
     // Setup GUI last since it requires some fields in SceneManager to be created
     this.GUI = SceneGUI.createGUI(this);
@@ -98,11 +99,19 @@ class SceneManager {
     return this._collidables;
   }
 
+  extractSceneOptionsFromObject(object) {
+    if (object.userData === undefined) return;
+    if (object.userData.doubleSidedPortals !== undefined)
+      this.doubleSidedPortals = object.userData.doubleSidedPortals;
+  }
+
   extractCollidablesFromObject(object) {
     const collidables = [];
     object.traverse((obj) => {
       if (obj.type === "Group") return;
-      collidables.push(obj);
+      if (obj.userData?.collidable === true) {
+        collidables.push(obj);
+      }
     });
 
     this.setCollidables(collidables);
@@ -239,7 +248,8 @@ class SceneManager {
     const projScreenMatrix = cameraWorldMatrixInverse
       .clone()
       .premultiply(cameraProjectionMatrix);
-    this._frustum.setFromProjectionMatrix(projScreenMatrix);
+    const frustum = new THREE.Frustum();
+    frustum.setFromProjectionMatrix(projScreenMatrix);
 
     // Render each of the portal interiors first
     for (let i = 0; i < this._portals.length; i++) {
@@ -251,7 +261,7 @@ class SceneManager {
       }
 
       // Check if portal is visible from camera. If not, skip it
-      if (!this._frustum.intersectsObject(portal.mesh)) {
+      if (!frustum.intersectsObject(portal.mesh)) {
         continue;
       }
 
@@ -263,10 +273,7 @@ class SceneManager {
       gl.disable(gl.STENCIL_TEST);
       gl.stencilMask(0);
 
-      // No need to clear first iterations
-      if (recursionLevel !== 0) {
-        gl.clear(gl.DEPTH_BUFFER_BIT);
-      }
+      gl.clear(gl.DEPTH_BUFFER_BIT);
 
       for (let j = 0; j < this._portals.length; j++) {
         if (j === i) continue;

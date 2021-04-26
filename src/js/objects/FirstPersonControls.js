@@ -136,12 +136,13 @@ export default class FirstPersonControls {
       }
       this.direction.normalize(); // this ensures consistent movements in all directions
 
+      const speed = this.freeCam ? 150 : 70;
       if (this.moveForward || this.moveBackward)
-        this.velocity.z -= this.direction.z * 70 * deltaTime;
+        this.velocity.z -= this.direction.z * speed * deltaTime;
       if (this.moveLeft || this.moveRight)
-        this.velocity.x -= this.direction.x * 70 * deltaTime;
+        this.velocity.x -= this.direction.x * speed * deltaTime;
       if ((this.freeCam && this.flyUp) || this.flyDown) {
-        this.velocity.y -= this.direction.y * 100 * deltaTime;
+        this.velocity.y -= this.direction.y * speed * deltaTime;
       }
 
       if (!this.freeCam && onObject !== null) {

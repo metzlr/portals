@@ -45,6 +45,9 @@ class Portal {
     this._doubleSided = value;
     this.mesh.material.side = value ? THREE.DoubleSide : THREE.FrontSide;
   }
+  get doubleSided() {
+    return this._doubleSided;
+  }
 
   set destination(destination) {
     if (!destination || !(destination instanceof Portal)) {
