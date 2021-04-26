@@ -7,16 +7,26 @@ class Portal {
       console.error("Portal object should be a plane");
     }
 
-    this.frameMesh = mesh;
-    this.frameMesh.material = new THREE.MeshBasicMaterial({
-      // colorWrite: false,
+    this.mesh = mesh;
+    this.mesh.material = new THREE.MeshBasicMaterial({
       side: THREE.DoubleSide,
       color: "#000",
     });
-    // this.frameMesh.visible = false;
+    // We will do our own frustum culling when rendering the portal
+    this.mesh.frustumCulled = false;
+    // this.mesh.geometry = new THREE.BoxGeometry(
+    //   mesh.geometry.parameters.width,
+    //   mesh.geometry.parameters.height,
+    //   1,
+    //   1,
+    //   1,
+    //   1
+    // );
 
-    this.frameMesh.geometry.computeBoundingBox();
-    this.worldBoundingBox = new THREE.Box3();
+    this.mesh.geometry.computeBoundingBox();
+    const size = new THREE.Vector3();
+    this.mesh.geometry.boundingBox.getSize(size);
+    this.size = new THREE.Vector2(size.x, size.y);
 
     this._destination = destination;
   }
@@ -35,21 +45,128 @@ class Portal {
     return this._destination !== null;
   }
 
-  update() {
-    this.worldBoundingBox.copy(this.frameMesh.geometry.boundingBox);
-    this.worldBoundingBox.applyMatrix4(this.frameMesh.matrixWorld);
+  get id() {
+    return this.mesh.uuid;
+  }
+
+  update() {}
+
+  getDestCameraWorldMatrix(cameraWorldMatrix) {
+    const outCameraTransform = this.mesh.matrixWorld
+      .clone()
+      .invert()
+      .multiply(cameraWorldMatrix);
+
+    outCameraTransform.premultiply(new THREE.Matrix4().makeRotationY(Math.PI));
+    outCameraTransform.premultiply(this.destination.mesh.matrixWorld);
+
+    return outCameraTransform;
+  }
+
+  getScreenRect(screenSize, cameraMatrixWorldInverse, cameraProjectionMatrix) {
+    const halfScreenWidth = screenSize.width / 2;
+    const halfScreenHeight = screenSize.height / 2;
+    const bbox = this.worldBoundingBox;
+    const screenBox = new THREE.Box2();
+    const screenPoint = new THREE.Vector2();
+
+    const point = new THREE.Vector3(bbox.min.x, bbox.min.y, bbox.min.z);
+    // Project into camera space
+    point
+      .applyMatrix4(cameraMatrixWorldInverse)
+      .applyMatrix4(cameraProjectionMatrix);
+    screenPoint.set(
+      point.x * halfScreenWidth + halfScreenWidth,
+      -point.y * halfScreenHeight + halfScreenHeight
+    );
+    screenBox.expandByPoint(screenPoint);
+
+    point.set(bbox.max.x, bbox.min.y, bbox.min.z);
+    point
+      .applyMatrix4(cameraMatrixWorldInverse)
+      .applyMatrix4(cameraProjectionMatrix);
+    screenPoint.set(
+      point.x * halfScreenWidth + halfScreenWidth,
+      -point.y * halfScreenHeight + halfScreenHeight
+    );
+    screenBox.expandByPoint(screenPoint);
+
+    point.set(bbox.min.x, bbox.max.y, bbox.min.z);
+    point
+      .applyMatrix4(cameraMatrixWorldInverse)
+      .applyMatrix4(cameraProjectionMatrix);
+    screenPoint.set(
+      point.x * halfScreenWidth + halfScreenWidth,
+      -point.y * halfScreenHeight + halfScreenHeight
+    );
+    screenBox.expandByPoint(screenPoint);
+
+    point.set(bbox.min.x, bbox.min.y, bbox.max.z);
+    point
+      .applyMatrix4(cameraMatrixWorldInverse)
+      .applyMatrix4(cameraProjectionMatrix);
+    screenPoint.set(
+      point.x * halfScreenWidth + halfScreenWidth,
+      -point.y * halfScreenHeight + halfScreenHeight
+    );
+    screenBox.expandByPoint(screenPoint);
+
+    point.set(bbox.max.x, bbox.max.y, bbox.min.z);
+    point
+      .applyMatrix4(cameraMatrixWorldInverse)
+      .applyMatrix4(cameraProjectionMatrix);
+    screenPoint.set(
+      point.x * halfScreenWidth + halfScreenWidth,
+      -point.y * halfScreenHeight + halfScreenHeight
+    );
+    screenBox.expandByPoint(screenPoint);
+
+    point.set(bbox.min.x, bbox.max.y, bbox.max.z);
+    point
+      .applyMatrix4(cameraMatrixWorldInverse)
+      .applyMatrix4(cameraProjectionMatrix);
+    screenPoint.set(
+      point.x * halfScreenWidth + halfScreenWidth,
+      -point.y * halfScreenHeight + halfScreenHeight
+    );
+    screenBox.expandByPoint(screenPoint);
+
+    point.set(bbox.max.x, bbox.min.y, bbox.max.z);
+    point
+      .applyMatrix4(cameraMatrixWorldInverse)
+      .applyMatrix4(cameraProjectionMatrix);
+    screenPoint.set(
+      point.x * halfScreenWidth + halfScreenWidth,
+      -point.y * halfScreenHeight + halfScreenHeight
+    );
+    screenBox.expandByPoint(screenPoint);
+
+    point.set(bbox.max.x, bbox.max.y, bbox.max.z);
+    point
+      .applyMatrix4(cameraMatrixWorldInverse)
+      .applyMatrix4(cameraProjectionMatrix);
+    screenPoint.set(
+      point.x * halfScreenWidth + halfScreenWidth,
+      -point.y * halfScreenHeight + halfScreenHeight
+    );
+    screenBox.expandByPoint(screenPoint);
+
+    return screenBox;
   }
 
   // View matrix = inverse world matrix
-  getAlignedProjectionMatrix(cameraWorldMatrix, projectionMatrix) {
-    const viewMatrix = cameraWorldMatrix.clone().invert();
+  getAlignedProjectionMatrix(
+    cameraWorldMatrix,
+    cameraWorldMatrixInverse,
+    cameraProjectionMatrix
+  ) {
     // Align near plane of camera's projection matrix to portal frame
     // Souce: http://www.terathon.com/lengyel/Lengyel-Oblique.pdf
     const cameraPos = new THREE.Vector3();
     const portalPos = new THREE.Vector3();
     const rotation = new THREE.Quaternion();
-    this.frameMesh.getWorldQuaternion(rotation);
-    this.frameMesh.getWorldPosition(portalPos);
+    this.mesh.getWorldQuaternion(rotation);
+    this.mesh.getWorldPosition(portalPos);
     cameraPos.setFromMatrixPosition(cameraWorldMatrix);
     // Get vector from portal to camera (used to calculate portal normal)
     cameraPos.sub(portalPos);
@@ -62,16 +179,16 @@ class Portal {
 
     let clipPlane = new THREE.Plane();
     // Offset position by a little bit so near plane is slightly in front of portal surface (ensures portal surface isn't visible)
-    portalPos.add(norm.clone().multiplyScalar(0.005));
+    // portalPos.add(norm.clone().multiplyScalar(1));
     clipPlane.setFromNormalAndCoplanarPoint(norm, portalPos);
-    clipPlane.applyMatrix4(viewMatrix);
+    clipPlane.applyMatrix4(cameraWorldMatrixInverse);
     clipPlane = new THREE.Vector4(
       clipPlane.normal.x,
       clipPlane.normal.y,
       clipPlane.normal.z,
       clipPlane.constant
     );
-    const newProjectionMatrix = projectionMatrix.clone();
+    const newProjectionMatrix = cameraProjectionMatrix.clone();
     const q = new THREE.Vector4();
     q.x =
       (Utils.sgn(clipPlane.x) + newProjectionMatrix.elements[8]) /

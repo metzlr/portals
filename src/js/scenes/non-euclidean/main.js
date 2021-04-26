@@ -1,9 +1,9 @@
-import PortalBasicScene from "./PortalBasicScene";
+import NonEuclideanScene from "./NonEuclidean.js";
 import Stats from "three/examples/jsm/libs/stats.module";
 
 (function () {
   const canvas = document.getElementById("main-canvas");
-  const sceneManager = new PortalBasicScene(canvas);
+  const sceneManager = new NonEuclideanScene(canvas);
   const stats = setupStatDisplay();
   if (stats != undefined) {
     document.body.appendChild(stats.dom);
