@@ -93,7 +93,7 @@ class PortalTraveller {
         const dest = portal.destination;
         const destData = this.portalData.get(dest.id);
         // If dot is zero, don't multiply by -1
-        // destData.previousDot = dotSign === 0.0 ? dot : -1 * dot;
+        destData.previousDot = dotSign === 0.0 ? dot : -1 * dot;
         destData.previousInRange = inRange;
         // Teleport camera
         const newWorldMatrix = portal.getDestCameraWorldMatrix(
@@ -105,6 +105,8 @@ class PortalTraveller {
         // Ensure camera matrices are up to date
         this.camera.updateMatrix();
         this.camera.updateWorldMatrix(true);
+
+        this.camera.getWorldPosition(cameraWorldPos);
       } else {
         // Invalid, but update data
         this.portalData.get(portal.id).previousDot = dot;
