@@ -1,15 +1,16 @@
 import * as THREE from "three";
 import { PointerLockControls } from "three/examples/jsm/controls/PointerLockControls.js";
+import Utils from "../Utils";
 
 export default class FirstPersonControls {
-  constructor(camera, scene) {
+  constructor(camera, scene, domElement) {
     this.camera = camera;
 
-    this.moveForward = this.moveBackward = this.moveLeft = this.moveRight = this.canJump = false;
+    this.moveForward = this.moveBackward = this.moveLeft = this.moveRight = this.canJump = this.freeCam = this.flyUp = this.flyDown = false;
     this.velocity = new THREE.Vector3();
     this.direction = new THREE.Vector3();
 
-    this._controls = new PointerLockControls(camera, document.body);
+    this._controls = new PointerLockControls(camera, domElement);
 
     const onKeyDown = (event) => {
       switch (event.code) {
@@ -33,9 +34,22 @@ export default class FirstPersonControls {
           this.moveRight = true;
           break;
 
+        case "KeyC":
+          this.freeCam = !this.freeCam;
+          break;
+
         case "Space":
-          if (this.canJump === true) this.velocity.y += 0.5;
-          this.canJump = false;
+          if (this.freeCam) {
+            this.flyUp = true;
+          } else {
+            if (this.canJump === true) this.velocity.y += 12;
+            this.canJump = false;
+          }
+          break;
+        case "ShiftLeft":
+          if (this.freeCam) {
+            this.flyDown = true;
+          }
           break;
       }
     };
@@ -61,9 +75,20 @@ export default class FirstPersonControls {
         case "KeyD":
           this.moveRight = false;
           break;
+
+        case "Space":
+          if (this.freeCam) {
+            this.flyUp = false;
+          }
+          break;
+        case "ShiftLeft":
+          if (this.freeCam) {
+            this.flyDown = false;
+          }
+          break;
       }
     };
-    document.addEventListener("click", () => {
+    domElement.addEventListener("click", () => {
       this._controls.lock();
     });
 
@@ -85,7 +110,7 @@ export default class FirstPersonControls {
       // Test for collision below
 
       let onObject = false;
-      if (collidables.length > 0) {
+      if (collidables.length > 0 && !this.freeCam) {
         this.raycaster.ray.origin.copy(this._controls.getObject().position);
         // this.raycaster.ray.origin.y -= 10;
         const intersections = this.raycaster.intersectObjects(
@@ -94,21 +119,32 @@ export default class FirstPersonControls {
         );
         onObject = intersections.length > 0;
       }
-      // 12 1.75
+
       this.velocity.x -= this.velocity.x * 10 * deltaTime;
       this.velocity.z -= this.velocity.z * 10 * deltaTime;
-      this.velocity.y -= 50 * deltaTime;
+      if (!this.freeCam) {
+        // Gravity
+        this.velocity.y -= 35 * deltaTime;
+      } else {
+        this.velocity.y -= this.velocity.y * 15 * deltaTime;
+      }
 
       this.direction.z = Number(this.moveForward) - Number(this.moveBackward);
       this.direction.x = Number(this.moveRight) - Number(this.moveLeft);
+      if (this.freeCam) {
+        this.direction.y = Number(this.flyDown) - Number(this.flyUp);
+      }
       this.direction.normalize(); // this ensures consistent movements in all directions
 
       if (this.moveForward || this.moveBackward)
-        this.velocity.z -= this.direction.z * 75 * deltaTime;
+        this.velocity.z -= this.direction.z * 70 * deltaTime;
       if (this.moveLeft || this.moveRight)
-        this.velocity.x -= this.direction.x * 75 * deltaTime;
+        this.velocity.x -= this.direction.x * 70 * deltaTime;
+      if ((this.freeCam && this.flyUp) || this.flyDown) {
+        this.velocity.y -= this.direction.y * 100 * deltaTime;
+      }
 
-      if (onObject === true) {
+      if (!this.freeCam && onObject === true) {
         this.velocity.y = Math.max(0, this.velocity.y);
         this.canJump = true;
       }
@@ -118,7 +154,7 @@ export default class FirstPersonControls {
 
       this._controls.getObject().position.y += this.velocity.y * deltaTime;
 
-      if (this._controls.getObject().position.y < 0) {
+      if (this._controls.getObject().position.y < 0 && !this.freeCam) {
         this.velocity.y = 0;
         this._controls.getObject().position.y = 0;
 

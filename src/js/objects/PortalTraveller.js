@@ -43,7 +43,7 @@ class PortalTraveller {
   update(portals) {
     this.camera.getWorldPosition(_vector1);
     const cameraWorldPos = _vector1;
-    for (let i = 0; i < portals.length; i++) {
+    for (let i = 0; i < 1; i++) {
       const portal = portals[i];
 
       portal.mesh.getWorldPosition(_vector2);
@@ -59,34 +59,19 @@ class PortalTraveller {
       const dotSign = Utils.sgn(dot);
 
       portalWorldDir.multiplyScalar(dot);
-      _vector3.subVectors(portalToCamera, portalWorldDir);
-      const inRange =
-        _vector3.lengthSq() <=
-        Math.min(data.worldHalfSizeSquared.x, data.worldHalfSizeSquared.y);
 
-      // console.log(
-      //   inRange,
-      //   data.previousInRange,
-      //   previousDotSign,
-      //   dotSign,
-      //   portal.id
-      // );
-      // console.log(dot, this.camera.near);
+      // Check if camera is colliding with portal's collision bbox (which extends in front and behind the portal surface)
+      // NOTE: an object going really fast could be a problem here
+      const cameraLocalPos = portal.mesh.worldToLocal(cameraWorldPos);
+      const inRange = portal.localCollisionBox.containsPoint(cameraLocalPos);
 
       // Make sure we are either currently in front/behind portal, or that we were last frame (don't want to teleport if we are off to the side)
       if (
         previousDot !== null &&
         dotSign !== previousDotSign &&
+        (portal.doubleSided || dotSign < 0) &&
         (inRange || data.previousInRange)
       ) {
-        // console.log("TELEPORT", portal.id);
-        console.log(
-          inRange,
-          data.previousInRange,
-          previousDotSign,
-          dotSign,
-          portal.id
-        );
         // Valid teleport!
         data.previousDot = null;
         data.previousInRange = false;

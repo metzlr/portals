@@ -2,19 +2,23 @@ import * as THREE from "three";
 import FirstPersonControls from "./FirstPersonControls";
 import PortalTraveller from "./PortalTraveller";
 import Portal from "./Portal.js";
+import Stats from "three/examples/jsm/libs/stats.module";
+import SceneGUI from "./SceneGUI";
 
 class SceneManager {
   constructor(canvas, sceneJSON) {
     if (sceneJSON === undefined) {
       console.error("'sceneJSON' is undefined");
     }
+
+    /* ----- OBJECTS ----- */
     const loader = new THREE.ObjectLoader();
     this.scene = loader.parse(sceneJSON);
 
     this.camera = new THREE.PerspectiveCamera(
       75,
       canvas.clientWidth / canvas.clientHeight,
-      0.01,
+      0.005,
       2000
     );
     this.camera.position.set(0, 0, 10);
@@ -24,11 +28,12 @@ class SceneManager {
     this._tempCamera = new THREE.PerspectiveCamera(
       75,
       canvas.clientWidth / canvas.clientHeight,
-      0.01,
+      0.005,
       2000
     );
     // Since we'll be updating tempCamera matrices anyway, no need for auto updates
     this._tempCamera.matrixAutoUpdate = false;
+
     this._frustum = new THREE.Frustum();
 
     this.renderer = new THREE.WebGLRenderer({
@@ -42,26 +47,53 @@ class SceneManager {
     this.renderer.setClearColor("#bbb");
 
     this._clock = new THREE.Clock();
-    this.deltaTime = undefined;
-    this.screenSize = new THREE.Vector2();
-    this.screenRect = new THREE.Box2();
-    this.renderer.getSize(this.screenSize);
+
+    this.stats = new Stats();
+    this.stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
+    document.body.appendChild(this.stats.dom);
 
     // this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     // this.controls.zoomSpeed = 0.25;
     // this.controls.rotateSpeed = 0.5;
 
-    this.controls = new FirstPersonControls(this.camera, this.scene);
+    this.controls = new FirstPersonControls(
+      this.camera,
+      this.scene,
+      this.renderer.domElement
+    );
     this._collidables = [];
     this._travellers = [new PortalTraveller(this.camera)];
 
-    this.maxPortalRecursion = 1;
-    this.renderPortals = true;
-
+    /* ----- PROPERTIES ----- */
     this._portalHelpers = [];
     this._portalHelperCameras = [];
 
+    this.deltaTime = undefined;
+    this.maxPortalRecursion = 1;
+    this.renderPortals = true;
+    this.portalTeleporting = true;
+    this._doubleSidedPortals = false;
     this.drawPortalCameras = false;
+
+    // Setup GUI last since it requires some fields in SceneManager to be created
+    this.GUI = SceneGUI.createGUI(this);
+  }
+
+  get doubleSidedPortals() {
+    return this._doubleSidedPortals;
+  }
+  set doubleSidedPortals(value) {
+    if (value !== true && value !== false) {
+      console.error("'doubleSidedPortals' expects a boolean value");
+      return;
+    }
+    this._doubleSidedPortals = value;
+
+    // Update each portal
+    // NOTE: Might be more efficient to just use one static, shared material across every portal (although this would make them less flexible)
+    for (let i = 0; i < this._portals.length; i++) {
+      this._portals[i].doubleSided = value;
+    }
   }
 
   getPortals() {
@@ -72,15 +104,44 @@ class SceneManager {
     return this._collidables;
   }
 
-  setPortals(portalPrimitives) {
-    this._portals = [];
+  extractCollidablesFromObject(object) {
+    const collidables = [];
+    object.traverse((obj) => {
+      if (obj.type === "Group") return;
+      collidables.push(obj);
+    });
 
-    if (portalPrimitives !== null) {
-      for (let i = 0; i < portalPrimitives.length; i++) {
-        const portal = new Portal(portalPrimitives[i]);
-        this._portals.push(portal);
+    this.setCollidables(collidables);
+  }
+
+  extractPortalsFromObject(object) {
+    const portalMap = new Map();
+    // Find and create portals
+    object.traverse((obj) => {
+      if (obj.type === "Group") return;
+      if (obj.name.length >= 2 && obj.name.substring(0, 2) === "p_") {
+        const portal = new Portal(obj, {
+          doubleSided: this.doubleSidedPortals,
+        });
+        portalMap.set(obj.name, portal);
       }
-    }
+    });
+
+    // Assign destinations
+    portalMap.forEach((portal) => {
+      if (
+        !portal.mesh.userData ||
+        portal.mesh.userData.destination === undefined
+      )
+        return;
+      portal.destination = portalMap.get(portal.mesh.userData.destination);
+    });
+
+    this.setPortals([...portalMap.values()]);
+  }
+
+  setPortals(portals) {
+    this._portals = portals;
 
     for (let i = 0; i < this._travellers.length; i++) {
       this._travellers[i].setPortals(this._portals);
@@ -132,18 +193,15 @@ class SceneManager {
       this.camera.updateProjectionMatrix();
       this._tempCamera.aspect = canvas.clientWidth / canvas.clientHeight;
       this._tempCamera.updateProjectionMatrix();
-
-      // Update size of screen (in pixels)
-      this.renderer.getSize(this.screenSize);
-      this.screenRect.set(
-        new THREE.Vector2(0, 0),
-        new THREE.Vector2(this.screenSize.x, this.screenSize.y)
-      );
     }
-    this.controls.update(this.deltaTime, this._collidables);
 
-    for (let i = 0; i < this._travellers.length; i++) {
-      this._travellers[i].update(this._portals);
+    this.controls.update(this.deltaTime, this._collidables);
+    this.stats.update();
+
+    if (this.portalTeleporting) {
+      for (let i = 0; i < this._travellers.length; i++) {
+        this._travellers[i].update(this._portals);
+      }
     }
 
     this.update();
@@ -194,7 +252,7 @@ class SceneManager {
       const portal = this._portals[i];
 
       // Skip portal we're who's perspective we're currently rendering
-      if (portal === skipPortal) {
+      if (portal === skipPortal || portal.destination === null) {
         continue;
       }
 

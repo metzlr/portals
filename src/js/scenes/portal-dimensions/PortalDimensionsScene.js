@@ -1,30 +1,17 @@
 import * as THREE from "three";
 import SceneManager from "../../objects/SceneManager";
-import sceneJSON from "../../../static/scenes/portal_double.json";
+import sceneJSON from "../../../static/scenes/portal_dimensions.json";
 import darkGridTexture from "../../../static/textures/dark_grid.png";
 
-class PortalRecursiveScene extends SceneManager {
+class PortalDimensionsScene extends SceneManager {
   constructor(canvas) {
     super(canvas, sceneJSON);
 
     this.camera.position.set(0, 6, 6);
 
-    const portalPrimitives = [];
-    const collidables = [];
-    this.scene.getObjectByName("world").traverse((obj) => {
-      if (obj.type === "Group") return;
-      if (obj.name.length >= 2 && obj.name.substring(0, 2) === "p_") {
-        portalPrimitives.push(obj);
-        return;
-      }
-      collidables.push(obj);
-    });
-
-    const portals = this.setPortals(portalPrimitives);
-    this.setCollidables(collidables);
-
-    portals[0].destination = portals[1];
-    portals[1].destination = portals[0];
+    const world = this.scene.getObjectByName("world");
+    this.extractCollidablesFromObject(world);
+    this.extractPortalsFromObject(world);
 
     const textureLoader = new THREE.TextureLoader();
     const floorTexture = textureLoader.load(darkGridTexture);
@@ -39,4 +26,4 @@ class PortalRecursiveScene extends SceneManager {
   update() {}
 }
 
-export default PortalRecursiveScene;
+export default PortalDimensionsScene;

@@ -2,14 +2,19 @@ import * as THREE from "three";
 import Utils from "../Utils.js";
 
 class Portal {
-  constructor(mesh, destination = null) {
+  constructor(mesh, options) {
     if (!(mesh.geometry instanceof THREE.PlaneGeometry)) {
       console.error("Portal object should be a plane");
     }
 
+    const { destination, doubleSided } = options;
+
+    this._destination = destination !== undefined ? destination : null;
+    this._doubleSided = doubleSided !== undefined ? doubleSided : null;
+
     this.mesh = mesh;
     this.mesh.material = new THREE.MeshBasicMaterial({
-      side: THREE.DoubleSide,
+      side: doubleSided ? THREE.DoubleSide : THREE.FrontSide,
       color: "#000",
     });
     // We will do our own frustum culling when rendering the portal
@@ -28,23 +33,32 @@ class Portal {
     this.mesh.geometry.boundingBox.getSize(size);
     this.size = new THREE.Vector2(size.x, size.y);
 
-    this._destination = destination;
+    this.localCollisionBox = new THREE.Box3(
+      this.mesh.geometry.boundingBox.min,
+      this.mesh.geometry.boundingBox.max
+    );
+    this.localCollisionBox.expandByPoint(new THREE.Vector3(0, 0, -3));
+    this.localCollisionBox.expandByPoint(new THREE.Vector3(0, 0, 3));
+  }
+
+  set doubleSided(value) {
+    this._doubleSided = value;
+    this.mesh.material.side = value ? THREE.DoubleSide : THREE.FrontSide;
   }
 
   set destination(destination) {
-    if (!(destination instanceof Portal)) {
-      console.error("destination is not an instance of Portal");
+    if (!destination || !(destination instanceof Portal)) {
+      console.error("Invalid portal destination");
+      return;
     }
     this._destination = destination;
   }
   get destination() {
     return this._destination;
   }
-
   get active() {
     return this._destination !== null;
   }
-
   get id() {
     return this.mesh.uuid;
   }
