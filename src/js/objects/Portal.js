@@ -103,15 +103,16 @@ class Portal {
     // Determine which side of portal camera is on. If a destination camera is in front of a portal, normal should be reversed
     let clipPlane = new THREE.Plane();
 
-    // Offset position by a little bit so near plane is slightly in behind portal surface (helps prevent artifacts)
+    // Offset position by a little bit so near plane is slightly in behind portal surface
+    // Here's the tradeoff: Higher offset values means less artifacts (caused by Z-fighting), but means that objects directly behind portal need to be further away
     const dot = norm.dot(portalToCamera);
     const side = dot > 0 ? 1 : -1;
     norm.multiplyScalar(-1 * side);
     // Shrink offset so it remains just in front of camera (when camera is really close)
+    // This allows us to squeeze a bit more distance out of the offset oblique proj matrix before just using the normal camera proj matrix
     const dist = Math.abs(dot);
     let adjustedOffset = Math.min(offsetAmount, dist * 0.5);
     // If cam is in front of portal and offset gets below this value just use normal projection matrix since just using adjustedOffset still results in flickering
-    // NOTE: this could result in flickering if there are objects behind portal closer than this cutoff distance
     if (
       this.globalCollisionBox.containsPoint(cameraPos) &&
       adjustedOffset < cutoff
