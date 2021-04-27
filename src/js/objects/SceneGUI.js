@@ -1,8 +1,8 @@
-import { GUI } from "three/examples/jsm/libs/dat.gui.module";
+import * as dat from "dat.gui";
 
 export default class SceneGUI {
   static createGUI(sceneManager) {
-    const gui = new GUI({ name: "Settings", width: 350 });
+    const gui = new dat.GUI({ name: "Settings", width: 350 });
     const portalFolder = gui.addFolder("Portals");
     portalFolder.add(sceneManager, "renderPortals").name("Render Portals");
     portalFolder.add(sceneManager, "portalTeleporting").name("Teleportation");
