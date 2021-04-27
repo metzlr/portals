@@ -22,7 +22,7 @@ class Portal {
     // this.mesh.geometry = new THREE.BoxGeometry(
     //   mesh.geometry.parameters.width,
     //   mesh.geometry.parameters.height,
-    //   1,
+    //   0.01,
     //   1,
     //   1,
     //   1

@@ -18,15 +18,15 @@ class SceneManager {
     this.camera = new THREE.PerspectiveCamera(
       75,
       canvas.clientWidth / canvas.clientHeight,
-      0.005,
-      2000
+      0.004,
+      50
     );
 
     this._tempCamera = new THREE.PerspectiveCamera(
       75,
       canvas.clientWidth / canvas.clientHeight,
-      0.005,
-      2000
+      0.004,
+      50
     );
     // Since we'll be updating tempCamera matrices anyway, no need for auto updates
     this._tempCamera.matrixAutoUpdate = false;

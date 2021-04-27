@@ -99,7 +99,7 @@ export default class FirstPersonControls {
       new THREE.Vector3(),
       new THREE.Vector3(0, -1, 0),
       0,
-      this.distToFeet
+      this.distToFeet + 0.001 // Fudge factor to reduce false positives/negatives
     );
 
     scene.add(this._controls.getObject());
