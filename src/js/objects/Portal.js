@@ -19,14 +19,6 @@ class Portal {
     });
     // We will do our own frustum culling when rendering the portal
     this.mesh.frustumCulled = false;
-    // this.mesh.geometry = new THREE.BoxGeometry(
-    //   mesh.geometry.parameters.width,
-    //   mesh.geometry.parameters.height,
-    //   0.01,
-    //   1,
-    //   1,
-    //   1
-    // );
 
     this.mesh.geometry.computeBoundingBox();
     const size = new THREE.Vector3();
@@ -39,6 +31,8 @@ class Portal {
     );
     this.localCollisionBox.expandByPoint(new THREE.Vector3(0, 0, -3));
     this.localCollisionBox.expandByPoint(new THREE.Vector3(0, 0, 3));
+
+    this.globalCollisionBox = this.localCollisionBox.clone();
   }
 
   set doubleSided(value) {
@@ -66,7 +60,11 @@ class Portal {
     return this.mesh.uuid;
   }
 
-  update() {}
+  update() {
+    this.globalCollisionBox = this.localCollisionBox
+      .clone()
+      .applyMatrix4(this.mesh.matrixWorld);
+  }
 
   getDestCameraWorldMatrix(cameraWorldMatrix) {
     const outCameraTransform = this.mesh.matrixWorld
@@ -84,7 +82,9 @@ class Portal {
   getAlignedProjectionMatrix(
     cameraWorldMatrix,
     cameraWorldMatrixInverse,
-    cameraProjectionMatrix
+    cameraProjectionMatrix,
+    offsetAmount = 0.05,
+    cutoff = 0.008
   ) {
     // Align near plane of camera's projection matrix to portal frame
     // Souce: http://www.terathon.com/lengyel/Lengyel-Oblique.pdf
@@ -93,19 +93,33 @@ class Portal {
     const rotation = new THREE.Quaternion();
     this.mesh.getWorldQuaternion(rotation);
     this.mesh.getWorldPosition(portalPos);
-    cameraPos.setFromMatrixPosition(cameraWorldMatrix);
     // Get vector from portal to camera (used to calculate portal normal)
-    cameraPos.sub(portalPos);
+    cameraPos.setFromMatrixPosition(cameraWorldMatrix);
+    const portalToCamera = cameraPos.clone().sub(portalPos);
 
     // Default normal of PlaneGeometry (aka portal) is (0, 0, 1)
     const norm = new THREE.Vector3(0, 0, 1).applyQuaternion(rotation);
-    // Determine which side of portal camera is on. If a destination camera is in front of a portal, normal should be reversed
-    const side = norm.dot(cameraPos) > 0 ? -1 : 1;
-    norm.multiplyScalar(side);
 
+    // Determine which side of portal camera is on. If a destination camera is in front of a portal, normal should be reversed
     let clipPlane = new THREE.Plane();
-    // Offset position by a little bit so near plane is slightly in front of portal surface (ensures portal surface isn't visible)
-    // portalPos.add(norm.clone().multiplyScalar(0.005));
+
+    // Offset position by a little bit so near plane is slightly in behind portal surface (helps prevent artifacts)
+    const dot = norm.dot(portalToCamera);
+    const side = dot > 0 ? 1 : -1;
+    norm.multiplyScalar(-1 * side);
+    // Shrink offset so it remains just in front of camera (when camera is really close)
+    const dist = Math.abs(dot);
+    let adjustedOffset = Math.min(offsetAmount, dist * 0.5);
+    // If cam is in front of portal and offset gets below this value just use normal projection matrix since just using adjustedOffset still results in flickering
+    // NOTE: this could result in flickering if there are objects behind portal closer than this cutoff distance
+    if (
+      this.globalCollisionBox.containsPoint(cameraPos) &&
+      adjustedOffset < cutoff
+    ) {
+      return cameraProjectionMatrix;
+    }
+    portalPos.add(norm.clone().multiplyScalar(-adjustedOffset));
+
     clipPlane.setFromNormalAndCoplanarPoint(norm, portalPos);
     clipPlane.applyMatrix4(cameraWorldMatrixInverse);
     clipPlane = new THREE.Vector4(

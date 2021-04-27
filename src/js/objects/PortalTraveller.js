@@ -62,9 +62,10 @@ class PortalTraveller {
 
       // Check if camera is colliding with portal's collision bbox (which extends in front and behind the portal surface)
       // NOTE: an object going really fast could be a problem here
-      _vector3.copy(cameraWorldPos);
-      const cameraLocalPos = portal.mesh.worldToLocal(_vector3);
-      const inRange = portal.localCollisionBox.containsPoint(cameraLocalPos);
+      // _vector3.copy(cameraWorldPos);
+      // const cameraLocalPos = portal.mesh.worldToLocal(_vector3);
+      // const inRange = portal.localCollisionBox.containsPoint(cameraLocalPos);
+      const inRange = portal.globalCollisionBox.containsPoint(cameraWorldPos);
 
       // Make sure we are either currently in front/behind portal, or that we were last frame (don't want to teleport if we are off to the side)
       if (
@@ -73,7 +74,6 @@ class PortalTraveller {
         (portal.doubleSided || dotSign < 0) &&
         (inRange || data.previousInRange)
       ) {
-        console.log("TELEPORT");
         // Valid teleport!
         data.previousDot = null;
         data.previousInRange = false;

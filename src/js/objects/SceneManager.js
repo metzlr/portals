@@ -11,6 +11,22 @@ class SceneManager {
       console.error("'sceneJSON' is undefined");
     }
 
+    /* ----- PROPERTIES ----- */
+    this._portalHelpers = [];
+    this._portalHelperCameras = [];
+
+    this.deltaTime = undefined;
+    this.maxPortalRecursion = 1;
+    this.destinationNearPlaneOffset = 0.03;
+    this.destinationObliqueCutoff = 0.01;
+    this.renderPortals = true;
+    this.portalTeleporting = true;
+    this._doubleSidedPortals = false;
+    this.drawPortalCameras = false;
+    this.frustumCullPortals = true;
+
+    this._cameraNearDistance = 0.001;
+
     /* ----- OBJECTS ----- */
     const loader = new THREE.ObjectLoader();
     this.scene = loader.parse(sceneJSON);
@@ -18,14 +34,14 @@ class SceneManager {
     this.camera = new THREE.PerspectiveCamera(
       75,
       canvas.clientWidth / canvas.clientHeight,
-      0.004,
+      this._cameraNearDistance,
       50
     );
 
     this._tempCamera = new THREE.PerspectiveCamera(
       75,
       canvas.clientWidth / canvas.clientHeight,
-      0.004,
+      this._cameraNearDistance,
       50
     );
     // Since we'll be updating tempCamera matrices anyway, no need for auto updates
@@ -56,22 +72,22 @@ class SceneManager {
     this._portals = [];
     this._travellers = [new PortalTraveller(this.camera)];
 
-    /* ----- PROPERTIES ----- */
-    this._portalHelpers = [];
-    this._portalHelperCameras = [];
-
-    this.deltaTime = undefined;
-    this.maxPortalRecursion = 1;
-    this.renderPortals = true;
-    this.portalTeleporting = true;
-    this._doubleSidedPortals = false;
-    this.drawPortalCameras = false;
-
     // Extract userData variables from scene object
     this.extractSceneOptionsFromObject(this.scene);
 
     // Setup GUI last since it requires some fields in SceneManager to be created
     this.GUI = SceneGUI.createGUI(this);
+  }
+
+  get cameraNearDistance() {
+    return this._cameraNearDistance;
+  }
+  set cameraNearDistance(value) {
+    this._cameraNearDistance = value;
+    this.camera.near = value;
+    this._tempCamera.near = value;
+    this.camera.updateProjectionMatrix();
+    this._tempCamera.updateProjectionMatrix();
   }
 
   get doubleSidedPortals() {
@@ -165,8 +181,8 @@ class SceneManager {
       const cam = new THREE.PerspectiveCamera(
         75,
         canvas.clientWidth / canvas.clientHeight,
-        0.0001,
-        2000
+        0.1,
+        10
       );
       const helper = new THREE.CameraHelper(cam);
       helper.visible = false;
@@ -199,6 +215,10 @@ class SceneManager {
       this.camera.updateProjectionMatrix();
       this._tempCamera.aspect = canvas.clientWidth / canvas.clientHeight;
       this._tempCamera.updateProjectionMatrix();
+    }
+
+    for (let i = 0; i < this._portals.length; i++) {
+      this._portals[i].update();
     }
 
     this.controls.update(this.deltaTime, this._collidables);
@@ -261,7 +281,7 @@ class SceneManager {
       }
 
       // Check if portal is visible from camera. If not, skip it
-      if (!frustum.intersectsObject(portal.mesh)) {
+      if (this.frustumCullPortals && !frustum.intersectsObject(portal.mesh)) {
         continue;
       }
 
@@ -326,7 +346,9 @@ class SceneManager {
           portal.destination.getAlignedProjectionMatrix(
             destWorldMatrix,
             destWorldMatrixInverse,
-            cameraProjectionMatrix
+            cameraProjectionMatrix,
+            this.destinationNearPlaneOffset,
+            this.destinationObliqueCutoff
           ),
           portal.destination.mesh // We can skip rendering the portal destination when drawing from its perspective
         );
@@ -338,7 +360,9 @@ class SceneManager {
           portal.destination.getAlignedProjectionMatrix(
             destWorldMatrix,
             destWorldMatrixInverse,
-            cameraProjectionMatrix
+            cameraProjectionMatrix,
+            this.destinationNearPlaneOffset,
+            this.destinationObliqueCutoff
           ),
           recursionLevel + 1,
           portal.destination // We can skip rendering the portal destination when drawing from its perspective
@@ -423,9 +447,7 @@ class SceneManager {
     const inverseProjection = this.camera.projectionMatrixInverse.clone();
     for (let i = 0; i < this._portals.length; i++) {
       const portal = this._portals[i];
-      const destWorldMatrix = this._getDestPortalCameraWorldMatrix(
-        portal.mesh.matrixWorld,
-        portal.destination.mesh.matrixWorld,
+      const destWorldMatrix = portal.getDestCameraWorldMatrix(
         this.camera.matrixWorld
       );
 
