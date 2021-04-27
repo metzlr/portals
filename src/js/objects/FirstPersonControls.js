@@ -1,6 +1,8 @@
 import * as THREE from "three";
 import { PointerLockControls } from "three/examples/jsm/controls/PointerLockControls.js";
 
+const _vector1 = new THREE.Vector3();
+
 export default class FirstPersonControls {
   constructor(camera, scene, domElement) {
     this.camera = camera;
@@ -106,6 +108,9 @@ export default class FirstPersonControls {
   }
 
   update(deltaTime, collidables) {
+    this.camera.getWorldScale(_vector1);
+    // console.log(_vector1.y);
+    const cameraWorldScale = _vector1;
     if (this._controls.isLocked === true) {
       // Test for collision below
 
@@ -136,7 +141,7 @@ export default class FirstPersonControls {
       }
       this.direction.normalize(); // this ensures consistent movements in all directions
 
-      const speed = this.freeCam ? 150 : 70;
+      const speed = this.freeCam ? 110 : 70;
       if (this.moveForward || this.moveBackward)
         this.velocity.z -= this.direction.z * speed * deltaTime;
       if (this.moveLeft || this.moveRight)
@@ -149,7 +154,7 @@ export default class FirstPersonControls {
         this.velocity.y = Math.max(0, this.velocity.y);
         this.canJump = true;
         this._controls.getObject().position.y =
-          onObject.point.y + this.distToFeet;
+          onObject.point.y + this.distToFeet * cameraWorldScale.y;
       }
 
       this._controls.moveRight(-this.velocity.x * deltaTime);

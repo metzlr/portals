@@ -25,17 +25,9 @@ class PortalTraveller {
     this.portalData = new Map();
     for (let i = 0; i < portals.length; i++) {
       const portal = portals[i];
-      const worldScale = new THREE.Vector3();
-      portal.mesh.getWorldScale(worldScale);
-      const worldHalfSizeSquared = new THREE.Vector2(
-        0.5 * portal.size.x * worldScale.x * (portal.size.x * worldScale.x),
-        0.5 * portal.size.y * worldScale.y * (portal.size.y * worldScale.y)
-      );
       this.portalData.set(portal.id, {
         previousDot: null,
         previousInRange: false,
-        worldHalfSizeSquared: worldHalfSizeSquared,
-        // canTeleport: true,
       });
     }
   }
@@ -83,14 +75,19 @@ class PortalTraveller {
         const newWorldMatrix = portal.getDestCameraWorldMatrix(
           this.camera.matrixWorld
         );
+        // Ensure camera matrices are up to date
         this.camera.position.setFromMatrixPosition(newWorldMatrix);
         this.camera.scale.setFromMatrixScale(newWorldMatrix);
         this.camera.quaternion.setFromRotationMatrix(newWorldMatrix);
-        // Ensure camera matrices are up to date
         this.camera.updateMatrix();
         this.camera.updateWorldMatrix(true);
 
         this.camera.getWorldPosition(cameraWorldPos);
+
+        for (let j = 0; j < portals.length; j++) {
+          if (j === i) continue;
+          this.portalData.get(portals[j].id).previousDot = null;
+        }
       } else {
         // Invalid, but update data
         this.portalData.get(portal.id).previousDot = dot;
