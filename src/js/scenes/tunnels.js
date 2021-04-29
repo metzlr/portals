@@ -1,29 +1,23 @@
 import * as THREE from "three";
 import SceneManager from "../objects/SceneManager";
-import sceneJSON from "../../static/scenes/tunnels.json";
-import darkGridTexture from "../../static/textures/dark_grid.png";
+import sceneURL from "url:../../static/scenes/tunnels.json";
 
 (function () {
   const canvas = document.getElementById("main-canvas");
-  const manager = new SceneManager(canvas, sceneJSON);
+  let manager;
 
-  manager.camera.position.set(0, 6, 6);
-  manager.camera.lookAt(new THREE.Vector3(0, 0, 0));
+  const loader = new THREE.ObjectLoader();
+  loader.load(sceneURL, (obj) => {
+    manager = new SceneManager(canvas, obj);
+    manager.camera.position.set(0, 6, 6);
+    manager.camera.lookAt(new THREE.Vector3(0, 0, 0));
 
-  const world = manager.scene.getObjectByName("world");
-  manager.extractCollidablesFromObject(world);
-  manager.extractPortalsFromObject(world);
+    const world = manager.scene.getObjectByName("world");
+    manager.extractCollidablesFromObject(world);
+    manager.extractPortalsFromObject(world);
 
-  const textureLoader = new THREE.TextureLoader();
-  const floorTexture = textureLoader.load(darkGridTexture);
-  floorTexture.wrapS = THREE.RepeatWrapping;
-  floorTexture.wrapT = THREE.RepeatWrapping;
-  floorTexture.repeat.set(10, 10);
-  const floorMaterial = new THREE.MeshStandardMaterial({ map: floorTexture });
-  const floor = manager.scene.getObjectByName("floor");
-  floor.material = floorMaterial;
-
-  renderScene();
+    renderScene();
+  });
 
   function renderScene() {
     requestAnimationFrame(renderScene);

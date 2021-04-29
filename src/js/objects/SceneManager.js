@@ -6,9 +6,9 @@ import Stats from "three/examples/jsm/libs/stats.module";
 import SceneGUI from "./SceneGUI";
 
 class SceneManager {
-  constructor(canvas, sceneJSON) {
-    if (sceneJSON === undefined) {
-      console.error("'sceneJSON' is undefined");
+  constructor(canvas, scene) {
+    if (scene === undefined) {
+      console.error("'scene' is undefined");
     }
 
     /* ----- PROPERTIES ----- */
@@ -25,11 +25,10 @@ class SceneManager {
     this.drawPortalCameras = false;
     this.frustumCullPortals = true;
 
-    this._cameraNearDistance = 0.001;
+    this._cameraNearDistance = 0.005;
 
     /* ----- OBJECTS ----- */
-    const loader = new THREE.ObjectLoader();
-    this.scene = loader.parse(sceneJSON);
+    this.scene = scene;
 
     this.camera = new THREE.PerspectiveCamera(
       75,

@@ -1,19 +1,23 @@
 import * as THREE from "three";
 import SceneManager from "../objects/SceneManager";
-import sceneJSON from "../../static/scenes/scale.json";
+import sceneURL from "url:../../static/scenes/scale.json";
 
 (function () {
   const canvas = document.getElementById("main-canvas");
-  const manager = new SceneManager(canvas, sceneJSON);
+  let manager;
 
-  manager.camera.position.set(0, 6, 6);
-  manager.camera.lookAt(new THREE.Vector3(0, 0, 0));
+  const loader = new THREE.ObjectLoader();
+  loader.load(sceneURL, (obj) => {
+    manager = new SceneManager(canvas, obj);
+    manager.camera.position.set(0, 6, 6);
+    manager.camera.lookAt(new THREE.Vector3(0, 0, 0));
 
-  const world = manager.scene.getObjectByName("world");
-  manager.extractCollidablesFromObject(world);
-  manager.extractPortalsFromObject(world);
+    const world = manager.scene.getObjectByName("world");
+    manager.extractCollidablesFromObject(world);
+    manager.extractPortalsFromObject(world);
 
-  renderScene();
+    renderScene();
+  });
 
   function renderScene() {
     requestAnimationFrame(renderScene);
