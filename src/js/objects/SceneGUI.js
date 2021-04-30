@@ -6,21 +6,25 @@ export default class SceneGUI {
     const portalFolder = gui.addFolder("Portals");
     portalFolder.add(sceneManager, "renderPortals").name("Render Portals");
     portalFolder.add(sceneManager, "portalTeleporting").name("Teleportation");
+    portalFolder
+      .add(sceneManager, "portalObliqueViewFrustum")
+      .name("Oblique View Frustum");
     portalFolder.add(sceneManager, "doubleSidedPortals").name("Double sided");
     portalFolder
       .add(sceneManager, "frustumCullPortals")
       .name("Frustum Culling");
     portalFolder.add(sceneManager, "drawPortalCameras").name("Camera Helpers");
+    portalFolder.add(sceneManager, "drawPortalColliders").name("Colliders");
     portalFolder
       .add(sceneManager, "maxPortalRecursion", 0, 20)
       .step(1)
       .name("Max Recursion Level");
     portalFolder
-      .add(sceneManager, "destinationNearPlaneOffset", 0.0, 0.5)
+      .add(sceneManager, "destinationNearPlaneOffset", 0.0, 0.1)
       .step(0.001)
       .name("Near Plane Offset");
     portalFolder
-      .add(sceneManager, "destinationObliqueCutoff", 0.0, 0.05)
+      .add(sceneManager, "destinationObliqueCutoff", 0.0, 0.1)
       .step(0.001)
       .name("Oblique Cutoff");
 

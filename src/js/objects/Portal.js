@@ -112,11 +112,11 @@ class Portal {
     // This allows us to squeeze a bit more distance out of the offset oblique proj matrix before just using the normal camera proj matrix
     const dist = Math.abs(dot);
     let adjustedOffset = Math.min(offsetAmount, dist * 0.5);
-    // If cam is in front of portal and offset gets below this value just use normal projection matrix since just using adjustedOffset still results in flickering
     if (
       this.globalCollisionBox.containsPoint(cameraPos) &&
       adjustedOffset < cutoff
     ) {
+      // If cam is in front of portal and offset gets below this value just use normal projection matrix since just using adjustedOffset still results in flickering
       return cameraProjectionMatrix;
     }
     portalPos.add(norm.clone().multiplyScalar(-adjustedOffset));
