@@ -11,8 +11,7 @@ class SceneManager {
       console.error("'scene' is undefined");
     }
 
-    /* ----- PROPERTIES ----- */
-    this.deltaTime = undefined;
+    /* ----- OPTIONS ----- */
     this.maxPortalRecursion = 1;
     this.destinationNearPlaneOffset = 0.02;
     this.destinationObliqueCutoff = 0.009;
@@ -54,6 +53,8 @@ class SceneManager {
     this.renderer.autoClear = false;
     this.renderer.info.autoReset = false;
     this.renderer.setClearColor("#bbb");
+    this.screenSize = new THREE.Vector2();
+    this.renderer.getSize(this.screenSize);
 
     this._clock = new THREE.Clock();
 
@@ -228,6 +229,8 @@ class SceneManager {
       this.camera.updateProjectionMatrix();
       this._tempCamera.aspect = canvas.clientWidth / canvas.clientHeight;
       this._tempCamera.updateProjectionMatrix();
+
+      this.renderer.getSize(this.screenSize);
     }
 
     for (let i = 0; i < this._portals.length; i++) {

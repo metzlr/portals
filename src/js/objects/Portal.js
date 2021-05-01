@@ -29,10 +29,12 @@ class Portal {
       this.mesh.geometry.boundingBox.min,
       this.mesh.geometry.boundingBox.max
     );
-    this.localCollisionBox.expandByPoint(new THREE.Vector3(0, 0, -3));
-    this.localCollisionBox.expandByPoint(new THREE.Vector3(0, 0, 3));
+    this.localCollisionBox.expandByPoint(new THREE.Vector3(0, 0, -2));
+    this.localCollisionBox.expandByPoint(new THREE.Vector3(0, 0, 2));
 
-    this.globalCollisionBox = this.localCollisionBox.clone();
+    this.globalCollisionBox = null;
+    this.globalBoundingBox = null;
+    this._updateGlobalBoundingBoxes();
   }
 
   set doubleSided(value) {
@@ -61,7 +63,14 @@ class Portal {
   }
 
   update() {
+    this._updateGlobalBoundingBoxes();
+  }
+
+  _updateGlobalBoundingBoxes() {
     this.globalCollisionBox = this.localCollisionBox
+      .clone()
+      .applyMatrix4(this.mesh.matrixWorld);
+    this.globalBoundingBox = this.mesh.geometry.boundingBox
       .clone()
       .applyMatrix4(this.mesh.matrixWorld);
   }
