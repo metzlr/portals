@@ -30097,13 +30097,16 @@ var _threeExamplesJsmLibsStatsModule = require("three/examples/jsm/libs/stats.mo
 var _threeExamplesJsmLibsStatsModuleDefault = _parcelHelpers.interopDefault(_threeExamplesJsmLibsStatsModule);
 var _SceneGUI = require("./SceneGUI");
 var _SceneGUIDefault = _parcelHelpers.interopDefault(_SceneGUI);
+var _shadersFullscreenQuadVert = require("../shaders/fullscreen-quad.vert");
+var _shadersFullscreenQuadVertDefault = _parcelHelpers.interopDefault(_shadersFullscreenQuadVert);
+var _shadersFullscreenQuadFrag = require("../shaders/fullscreen-quad.frag");
+var _shadersFullscreenQuadFragDefault = _parcelHelpers.interopDefault(_shadersFullscreenQuadFrag);
 class SceneManager {
   constructor(canvas, scene) {
     if (scene === undefined) {
       console.error("'scene' is undefined");
     }
-    /*----- PROPERTIES -----*/
-    this.deltaTime = undefined;
+    /*----- OPTIONS -----*/
     this.maxPortalRecursion = 1;
     this.destinationNearPlaneOffset = 0.02;
     this.destinationObliqueCutoff = 0.009;
@@ -30130,6 +30133,8 @@ class SceneManager {
     this.renderer.autoClear = false;
     this.renderer.info.autoReset = false;
     this.renderer.setClearColor("#bbb");
+    this.screenSize = new _three.Vector2();
+    this.renderer.getSize(this.screenSize);
     this._clock = new _three.Clock();
     this.stats = new _threeExamplesJsmLibsStatsModuleDefault.default();
     this.stats.showPanel(0);
@@ -30151,6 +30156,16 @@ class SceneManager {
     this.extractSceneOptionsFromObject(this.scene);
     // Setup GUI last since it requires some fields in SceneManager to be created
     this.GUI = _SceneGUIDefault.default.createGUI(this);
+    // Quad rendered as scene background
+    const fullScreenQuadGeometry = new _three.BufferGeometry();
+    const vertices = [-1, -1, 3, -1, -1, 3];
+    fullScreenQuadGeometry.setAttribute("position", new _three.Float32BufferAttribute(vertices, 2));
+    this.fullScreenQuad = new _three.Mesh(fullScreenQuadGeometry, new _three.RawShaderMaterial({
+      vertexShader: _shadersFullscreenQuadVertDefault.default,
+      fragmentShader: _shadersFullscreenQuadFragDefault.default
+    }));
+    this.fullScreenQuad.frustumCulled = false;
+    this.orthographicCamera = new _three.OrthographicCamera(-1, 1, 1, -1, 0, 1);
   }
   get cameraNearDistance() {
     return this._cameraNearDistance;
@@ -30264,6 +30279,7 @@ class SceneManager {
       this.camera.updateProjectionMatrix();
       this._tempCamera.aspect = canvas.clientWidth / canvas.clientHeight;
       this._tempCamera.updateProjectionMatrix();
+      this.renderer.getSize(this.screenSize);
     }
     for (let i = 0; i < this._portals.length; i++) {
       this._portals[i].update();
@@ -30293,98 +30309,76 @@ class SceneManager {
   }
   _recursivePortalRender(cameraWorldMatrix, cameraWorldMatrixInverse, cameraProjectionMatrix, recursionLevel, skipPortal = null) {
     const gl = this.renderer.getContext();
+    // Enable writing to depth/color buffers
+    gl.colorMask(false, false, false, false);
+    // Enable stencil
+    gl.enable(gl.STENCIL_TEST);
+    // Disable writing to stencil
+    gl.stencilMask(0);
+    // Only draw in areas where stencil value == recursionLevel
+    gl.stencilFunc(gl.EQUAL, recursionLevel, 0xff);
+    // Enable depth testing
+    gl.enable(gl.DEPTH_TEST);
+    gl.depthFunc(gl.LESS);
+    gl.depthMask(true);
+    // Render each portal to depth buffer
+    this._drawMultiple(this._portalPrimitives, cameraWorldMatrix, cameraProjectionMatrix, skipPortal ? [skipPortal.mesh] : undefined);
+    gl.colorMask(true, true, true, true);
+    this._draw(this.scene, cameraWorldMatrix, cameraProjectionMatrix, this._portalPrimitives);
+    // Base case - max recursion level reached
+    if (recursionLevel === this.maxPortalRecursion) return;
     // Update frustum
     const projScreenMatrix = cameraWorldMatrixInverse.clone().premultiply(cameraProjectionMatrix);
     const frustum = new _three.Frustum();
     frustum.setFromProjectionMatrix(projScreenMatrix);
-    // Render each of the portal interiors first
     for (let i = 0; i < this._portals.length; i++) {
       const portal = this._portals[i];
-      // Skip portal we're who's perspective we're currently rendering
-      if (portal === skipPortal || portal.destination === null) {
-        continue;
-      }
+      if (portal === skipPortal) continue;
       // Check if portal is visible from camera. If not, skip it
       if (this.frustumCullPortals && !frustum.intersectsObject(portal.mesh)) {
         continue;
       }
-      gl.colorMask(false, false, false, false);
+      // Increment stencil buffer within visible portal frame
       gl.enable(gl.DEPTH_TEST);
-      gl.depthMask(true);
-      gl.depthFunc(gl.LESS);
-      gl.disable(gl.STENCIL_TEST);
-      gl.stencilMask(0);
-      gl.clear(gl.DEPTH_BUFFER_BIT);
-      // Restore other portals (not including this one) back into depth buffer so stencil will only be incremented where this portal is actually visible
-      this._drawMultiple(this._portalPrimitives, cameraWorldMatrix, cameraProjectionMatrix, skipPortal ? [portal.mesh, skipPortal.mesh] : [portal.mesh]);
-      // Disable writing to color and depth buffers
-      gl.depthMask(false);
-      gl.enable(gl.STENCIL_TEST);
-      // Enable writing to all stencil bits
+      gl.colorMask(false, false, false, false);
       gl.stencilMask(0xff);
-      // Pass stencil test only when inside portal of previous recursion level
+      gl.depthMask(false);
       gl.stencilFunc(gl.EQUAL, recursionLevel, 0xff);
-      // Increment the stencil buffer when both stencil and depth function pass
       gl.stencilOp(gl.KEEP, gl.KEEP, gl.INCR);
-      // This will increment the stencil buffer everywhere this portal lies within portal from previous recursionLevel
+      gl.depthFunc(gl.EQUAL);
       this._draw(portal.mesh, cameraWorldMatrix, cameraProjectionMatrix);
+      // Clear depth buffer within portal frame (where stencil buffer was just incremented)
+      gl.stencilMask(0);
+      gl.stencilFunc(gl.EQUAL, recursionLevel + 1, 0xff);
+      gl.depthMask(true);
+      gl.depthFunc(gl.ALWAYS);
+      this._draw(this.fullScreenQuad, this.orthographicCamera.matrixWorld, this.orthographicCamera.projectionMatrix);
       // Now generate view matrix for portal destination
-      const destWorldMatrix = portal.getDestCameraWorldMatrix(cameraWorldMatrix);
+      const destWorldMatrix = portal.destinationTransform.clone().multiply(cameraWorldMatrix);
       const destWorldMatrixInverse = destWorldMatrix.clone().invert();
-      if (recursionLevel === this.maxPortalRecursion) {
-        // If we've reached the maximum recursion depth, draw the final level
-        // Enable writing to depth/color buffers
-        gl.colorMask(true, true, true, true);
-        gl.depthMask(true);
-        // Enable depth testing
-        gl.enable(gl.DEPTH_TEST);
-        gl.depthFunc(gl.LESS);
-        // Use fresh depth buffer
-        gl.clear(gl.DEPTH_BUFFER_BIT);
-        gl.enable(gl.STENCIL_TEST);
-        // Disable writing to stencil buffer
-        gl.stencilMask(0);
-        // Only draw inside the portal for this level (i.e. where stencil value == recursionLevel + 1)
-        gl.stencilFunc(gl.EQUAL, recursionLevel + 1, 0xff);
-        // Draw using aligned projection matrix
-        this._draw(this.scene, destWorldMatrix, this.portalObliqueViewFrustum ? portal.destination.getAlignedProjectionMatrix(destWorldMatrix, destWorldMatrixInverse, cameraProjectionMatrix, this.destinationNearPlaneOffset, this.destinationObliqueCutoff) : cameraProjectionMatrix, [portal.destination.mesh]);
-      } else {
-        // Otherwise recurse using destination world matrix and algined projection matrix
-        this._recursivePortalRender(destWorldMatrix, destWorldMatrixInverse, this.portalObliqueViewFrustum ? portal.destination.getAlignedProjectionMatrix(destWorldMatrix, destWorldMatrixInverse, cameraProjectionMatrix, this.destinationNearPlaneOffset, this.destinationObliqueCutoff) : cameraProjectionMatrix, recursionLevel + 1, portal.destination);
-      }
+      // Render from destination view
+      this._recursivePortalRender(destWorldMatrix, destWorldMatrixInverse, this.portalObliqueViewFrustum ? portal.destination.getAlignedProjectionMatrix(destWorldMatrix, destWorldMatrixInverse, cameraProjectionMatrix, this.destinationNearPlaneOffset, this.destinationObliqueCutoff) : cameraProjectionMatrix, recursionLevel + 1, portal.destination);
       // Now we decrement stencil buffer to cleanup the incremented values.
       // This is necessary so stencil values relative to this portal are reset for the next portal in the for-loop
-      // Disable color and depth masks
+      // Disable color writing
       gl.colorMask(false, false, false, false);
-      gl.depthMask(false);
       gl.disable(gl.DEPTH_TEST);
+      gl.depthMask(false);
       // Enable stencil test/writing
       gl.enable(gl.STENCIL_TEST);
       gl.stencilMask(0xff);
       // Fail when inside this portals frame
       gl.stencilFunc(gl.NOTEQUAL, recursionLevel + 1, 0xff);
-      // Decrement on fail
+      // Decrement regardless of depth test
       gl.stencilOp(gl.DECR, gl.KEEP, gl.KEEP);
       this._draw(portal.mesh, cameraWorldMatrix, cameraProjectionMatrix);
     }
-    // Disable stencil test and writing to color/stencil buffers
-    gl.disable(gl.STENCIL_TEST);
-    gl.stencilMask(0);
-    gl.colorMask(false, false, false, false);
-    // Now clear the depth buffer (it currently has depth data from portal cam's perspective) and update depth values for each portal frame
-    gl.enable(gl.DEPTH_TEST);
+    // Reset values
+    gl.colorMask(true, true, true, true);
     gl.depthFunc(gl.LESS);
     gl.depthMask(true);
-    gl.clear(gl.DEPTH_BUFFER_BIT);
-    // Draw portals into depth buffer. This is necessary so they are correctly in the scene render we're about to do
-    this._drawMultiple(this._portalPrimitives, cameraWorldMatrix, cameraProjectionMatrix, skipPortal ? [skipPortal.mesh] : undefined);
-    // Now we draw scene, but only within areas where stencil value >= recursionLevel
-    gl.enable(gl.STENCIL_TEST);
+    gl.disable(gl.STENCIL_TEST);
     gl.stencilMask(0);
-    gl.stencilFunc(gl.LEQUAL, recursionLevel, 0xff);
-    // Re-enable writing to color buffer
-    gl.colorMask(true, true, true, true);
-    this._draw(this.scene, cameraWorldMatrix, cameraProjectionMatrix, skipPortal ? [skipPortal.mesh] : undefined);
   }
   _draw(object, cameraWorldMatrix, cameraProjectionMatrix, hideObjects) {
     // NOTE: no need to manually update camera.matrixWorldInverse since the renderer will automatically do that
@@ -30450,7 +30444,7 @@ class SceneManager {
 }
 exports.default = SceneManager;
 
-},{"three":"1lq1c","./FirstPersonControls":"6cQMb","./PortalTraveller":"726I2","./Portal.js":"6v5md","three/examples/jsm/libs/stats.module":"24OPR","./SceneGUI":"TbHXq","@parcel/transformer-js/lib/esmodule-helpers.js":"5gA8y"}],"6cQMb":[function(require,module,exports) {
+},{"three":"1lq1c","./FirstPersonControls":"6cQMb","./PortalTraveller":"726I2","./Portal.js":"6v5md","three/examples/jsm/libs/stats.module":"24OPR","./SceneGUI":"TbHXq","@parcel/transformer-js/lib/esmodule-helpers.js":"5gA8y","../shaders/fullscreen-quad.vert":"7bggO","../shaders/fullscreen-quad.frag":"3nHBr"}],"6cQMb":[function(require,module,exports) {
 var _parcelHelpers = require("@parcel/transformer-js/lib/esmodule-helpers.js");
 _parcelHelpers.defineInteropFlag(exports);
 var _three = require("three");
@@ -30800,7 +30794,7 @@ class PortalTraveller {
         destData.previousDot = dotSign === 0.0 ? dot : -1 * dot;
         destData.previousInRange = inRange;
         // Teleport camera
-        const newWorldMatrix = portal.getDestCameraWorldMatrix(this.camera.matrixWorld);
+        const newWorldMatrix = portal.destinationTransform.clone().multiply(this.camera.matrixWorld);
         // Ensure camera matrices are up to date
         this.camera.position.setFromMatrixPosition(newWorldMatrix);
         this.camera.scale.setFromMatrixScale(newWorldMatrix);
@@ -30860,9 +30854,13 @@ class Portal {
     this.mesh.geometry.boundingBox.getSize(size);
     this.size = new _three.Vector2(size.x, size.y);
     this.localCollisionBox = new _three.Box3(this.mesh.geometry.boundingBox.min, this.mesh.geometry.boundingBox.max);
-    this.localCollisionBox.expandByPoint(new _three.Vector3(0, 0, -3));
-    this.localCollisionBox.expandByPoint(new _three.Vector3(0, 0, 3));
-    this.globalCollisionBox = this.localCollisionBox.clone();
+    this.localCollisionBox.expandByPoint(new _three.Vector3(0, 0, -2));
+    this.localCollisionBox.expandByPoint(new _three.Vector3(0, 0, 2));
+    this.globalCollisionBox = null;
+    this.globalBoundingBox = null;
+    this._updateGlobalBoundingBoxes();
+    this.destinationTransform = null;
+    this._updateDestinationTransform();
   }
   set doubleSided(value) {
     this._doubleSided = value;
@@ -30877,6 +30875,7 @@ class Portal {
       return;
     }
     this._destination = destination;
+    this._updateDestinationTransform();
   }
   get destination() {
     return this._destination;
@@ -30888,13 +30887,22 @@ class Portal {
     return this.mesh.uuid;
   }
   update() {
-    this.globalCollisionBox = this.localCollisionBox.clone().applyMatrix4(this.mesh.matrixWorld);
+    this._updateGlobalBoundingBoxes();
+    this._updateDestinationTransform();
   }
-  getDestCameraWorldMatrix(cameraWorldMatrix) {
-    const outCameraTransform = this.mesh.matrixWorld.clone().invert().multiply(cameraWorldMatrix);
-    outCameraTransform.premultiply(new _three.Matrix4().makeRotationY(Math.PI));
-    outCameraTransform.premultiply(this.destination.mesh.matrixWorld);
-    return outCameraTransform;
+  _updateGlobalBoundingBoxes() {
+    this.globalCollisionBox = this.localCollisionBox.clone().applyMatrix4(this.mesh.matrixWorld);
+    this.globalBoundingBox = this.mesh.geometry.boundingBox.clone().applyMatrix4(this.mesh.matrixWorld);
+  }
+  // TODO: Figure out why this ends up with wrong matrix when called only at initial scene setup (when destination is first set)
+  _updateDestinationTransform() {
+    if (this._destination === null) {
+      this.destinationTransform = null;
+      return;
+    }
+    this.destinationTransform = new _three.Matrix4().makeRotationY(Math.PI);
+    this.destinationTransform.premultiply(this.destination.mesh.matrixWorld);
+    this.destinationTransform.multiply(this.mesh.matrixWorld.clone().invert());
   }
   // View matrix = inverse world matrix
   getAlignedProjectionMatrix(cameraWorldMatrix, cameraWorldMatrixInverse, cameraProjectionMatrix, offsetAmount = 0.05, cutoff = 0.008) {
@@ -33553,6 +33561,10 @@ var define;
   });
 });
 
+},{}],"7bggO":[function(require,module,exports) {
+module.exports="#version 300 es\n#define GLSLIFY 1\nin vec2 position;\n// out vec2 texcoords; // texcoords are in the normalized [0,1] range for the viewport-filling quad part of the triangle\n\nvoid main() {\n  gl_Position = vec4(position, 1.0, 1.0);\n  // textcoords = 0.5 * gl_Position.xy + vec2(0.5);\n}";
+},{}],"3nHBr":[function(require,module,exports) {
+module.exports="#version 300 es\nprecision highp float;\n#define GLSLIFY 1\n\nout vec4 outColor;\n\nvoid main() {\n  outColor = vec4(1.0, 0, 0, 1.0);\n}";
 },{}],"6GNUU":[function(require,module,exports) {
 module.exports = require('./bundle-url').getBundleURL() + "../scale.471235f0.json"
 },{"./bundle-url":"3seVR"}],"3seVR":[function(require,module,exports) {
