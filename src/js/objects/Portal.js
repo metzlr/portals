@@ -35,6 +35,9 @@ class Portal {
     this.globalCollisionBox = null;
     this.globalBoundingBox = null;
     this._updateGlobalBoundingBoxes();
+
+    this.destinationTransform = null;
+    this._updateDestinationTransform();
   }
 
   set doubleSided(value) {
@@ -51,6 +54,8 @@ class Portal {
       return;
     }
     this._destination = destination;
+
+    this._updateDestinationTransform();
   }
   get destination() {
     return this._destination;
@@ -64,6 +69,7 @@ class Portal {
 
   update() {
     this._updateGlobalBoundingBoxes();
+    this._updateDestinationTransform();
   }
 
   _updateGlobalBoundingBoxes() {
@@ -75,16 +81,16 @@ class Portal {
       .applyMatrix4(this.mesh.matrixWorld);
   }
 
-  getDestCameraWorldMatrix(cameraWorldMatrix) {
-    const outCameraTransform = this.mesh.matrixWorld
-      .clone()
-      .invert()
-      .multiply(cameraWorldMatrix);
+  // TODO: Figure out why this ends up with wrong matrix when called only at initial scene setup (when destination is first set)
+  _updateDestinationTransform() {
+    if (this._destination === null) {
+      this.destinationTransform = null;
+      return;
+    }
 
-    outCameraTransform.premultiply(new THREE.Matrix4().makeRotationY(Math.PI));
-    outCameraTransform.premultiply(this.destination.mesh.matrixWorld);
-
-    return outCameraTransform;
+    this.destinationTransform = new THREE.Matrix4().makeRotationY(Math.PI);
+    this.destinationTransform.premultiply(this.destination.mesh.matrixWorld);
+    this.destinationTransform.multiply(this.mesh.matrixWorld.clone().invert());
   }
 
   // View matrix = inverse world matrix

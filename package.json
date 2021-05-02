@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/metzlr/portals#readme",
   "devDependencies": {
+    "@parcel/transformer-glsl": "^2.0.0-nightly.2271",
     "@parcel/transformer-image": "^2.0.0-nightly.2271",
     "babel-eslint": "^10.1.0",
     "eslint": "^7.25.0",

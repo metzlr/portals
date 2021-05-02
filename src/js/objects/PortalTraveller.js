@@ -72,9 +72,9 @@ class PortalTraveller {
         destData.previousDot = dotSign === 0.0 ? dot : -1 * dot;
         destData.previousInRange = inRange;
         // Teleport camera
-        const newWorldMatrix = portal.getDestCameraWorldMatrix(
-          this.camera.matrixWorld
-        );
+        const newWorldMatrix = portal.destinationTransform
+          .clone()
+          .multiply(this.camera.matrixWorld);
         // Ensure camera matrices are up to date
         this.camera.position.setFromMatrixPosition(newWorldMatrix);
         this.camera.scale.setFromMatrixScale(newWorldMatrix);

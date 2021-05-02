@@ -5,6 +5,9 @@ import Portal from "./Portal.js";
 import Stats from "three/examples/jsm/libs/stats.module";
 import SceneGUI from "./SceneGUI";
 
+import fullscreenQuadVert from "../shaders/fullscreen-quad.vert";
+import fullscreenQuadFrag from "../shaders/fullscreen-quad.frag";
+
 class SceneManager {
   constructor(canvas, scene) {
     if (scene === undefined) {
@@ -87,6 +90,26 @@ class SceneManager {
 
     // Setup GUI last since it requires some fields in SceneManager to be created
     this.GUI = SceneGUI.createGUI(this);
+
+    // Quad rendered as scene background
+    const fullScreenQuadGeometry = new THREE.BufferGeometry();
+    const vertices = [-1, -1, 3, -1, -1, 3];
+    fullScreenQuadGeometry.setAttribute(
+      "position",
+      new THREE.Float32BufferAttribute(vertices, 2)
+    );
+
+    this.fullScreenQuad = new THREE.Mesh(
+      fullScreenQuadGeometry,
+      new THREE.RawShaderMaterial({
+        vertexShader: fullscreenQuadVert,
+        fragmentShader: fullscreenQuadFrag,
+        // colorWrite: false,
+      })
+    );
+    this.fullScreenQuad.frustumCulled = false;
+
+    this.orthographicCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
   }
 
   get cameraNearDistance() {
@@ -282,6 +305,38 @@ class SceneManager {
     skipPortal = null
   ) {
     const gl = this.renderer.getContext();
+    // Enable writing to depth/color buffers
+    gl.colorMask(false, false, false, false);
+    // Enable stencil
+    gl.enable(gl.STENCIL_TEST);
+    // Disable writing to stencil
+    gl.stencilMask(0);
+    // Only draw in areas where stencil value == recursionLevel
+    gl.stencilFunc(gl.EQUAL, recursionLevel, 0xff);
+    // Enable depth testing
+    gl.enable(gl.DEPTH_TEST);
+    gl.depthFunc(gl.LESS);
+    gl.depthMask(true);
+
+    // Render each portal to depth buffer
+    this._drawMultiple(
+      this._portalPrimitives,
+      cameraWorldMatrix,
+      cameraProjectionMatrix,
+      skipPortal ? [skipPortal.mesh] : undefined
+    );
+
+    gl.colorMask(true, true, true, true);
+
+    this._draw(
+      this.scene,
+      cameraWorldMatrix,
+      cameraProjectionMatrix,
+      this._portalPrimitives
+    );
+
+    // Base case - max recursion level reached
+    if (recursionLevel === this.maxPortalRecursion) return;
 
     // Update frustum
     const projScreenMatrix = cameraWorldMatrixInverse
@@ -290,157 +345,84 @@ class SceneManager {
     const frustum = new THREE.Frustum();
     frustum.setFromProjectionMatrix(projScreenMatrix);
 
-    // Render each of the portal interiors first
     for (let i = 0; i < this._portals.length; i++) {
       const portal = this._portals[i];
 
-      // Skip portal we're who's perspective we're currently rendering
-      if (portal === skipPortal || portal.destination === null) {
-        continue;
-      }
+      if (portal === skipPortal) continue;
 
       // Check if portal is visible from camera. If not, skip it
       if (this.frustumCullPortals && !frustum.intersectsObject(portal.mesh)) {
         continue;
       }
 
-      gl.colorMask(false, false, false, false);
+      // Increment stencil buffer within visible portal frame
       gl.enable(gl.DEPTH_TEST);
-
-      gl.depthMask(true);
-      gl.depthFunc(gl.LESS);
-      gl.disable(gl.STENCIL_TEST);
-      gl.stencilMask(0);
-
-      gl.clear(gl.DEPTH_BUFFER_BIT);
-
-      // Restore other portals (not including this one) back into depth buffer so stencil will only be incremented where this portal is actually visible
-      this._drawMultiple(
-        this._portalPrimitives,
-        cameraWorldMatrix,
-        cameraProjectionMatrix,
-        skipPortal ? [portal.mesh, skipPortal.mesh] : [portal.mesh]
-      );
-
-      // Disable writing to color and depth buffers
-      gl.depthMask(false);
-      gl.enable(gl.STENCIL_TEST);
-      // Enable writing to all stencil bits
+      gl.colorMask(false, false, false, false);
       gl.stencilMask(0xff);
-      // Pass stencil test only when inside portal of previous recursion level
+      gl.depthMask(false);
       gl.stencilFunc(gl.EQUAL, recursionLevel, 0xff);
-      // Increment the stencil buffer when both stencil and depth function pass
       gl.stencilOp(gl.KEEP, gl.KEEP, gl.INCR);
-      // This will increment the stencil buffer everywhere this portal lies within portal from previous recursionLevel
+      gl.depthFunc(gl.EQUAL);
       this._draw(portal.mesh, cameraWorldMatrix, cameraProjectionMatrix);
 
-      // Now generate view matrix for portal destination
-      const destWorldMatrix = portal.getDestCameraWorldMatrix(
-        cameraWorldMatrix
+      // Clear depth buffer within portal frame (where stencil buffer was just incremented)
+      gl.stencilMask(0);
+      gl.stencilFunc(gl.EQUAL, recursionLevel + 1, 0xff);
+      gl.depthMask(true);
+      gl.depthFunc(gl.ALWAYS);
+      this._draw(
+        this.fullScreenQuad,
+        this.orthographicCamera.matrixWorld,
+        this.orthographicCamera.projectionMatrix
       );
+
+      // Now generate view matrix for portal destination
+      const destWorldMatrix = portal.destinationTransform
+        .clone()
+        .multiply(cameraWorldMatrix);
       const destWorldMatrixInverse = destWorldMatrix.clone().invert();
 
-      if (recursionLevel === this.maxPortalRecursion) {
-        // If we've reached the maximum recursion depth, draw the final level
-
-        // Enable writing to depth/color buffers
-        gl.colorMask(true, true, true, true);
-        gl.depthMask(true);
-        // Enable depth testing
-        gl.enable(gl.DEPTH_TEST);
-        gl.depthFunc(gl.LESS);
-        // Use fresh depth buffer
-        gl.clear(gl.DEPTH_BUFFER_BIT);
-
-        gl.enable(gl.STENCIL_TEST);
-        // Disable writing to stencil buffer
-        gl.stencilMask(0);
-        // Only draw inside the portal for this level (i.e. where stencil value == recursionLevel + 1)
-        gl.stencilFunc(gl.EQUAL, recursionLevel + 1, 0xff);
-
-        // Draw using aligned projection matrix
-        this._draw(
-          this.scene,
-          destWorldMatrix,
-          this.portalObliqueViewFrustum
-            ? portal.destination.getAlignedProjectionMatrix(
-                destWorldMatrix,
-                destWorldMatrixInverse,
-                cameraProjectionMatrix,
-                this.destinationNearPlaneOffset,
-                this.destinationObliqueCutoff
-              )
-            : cameraProjectionMatrix,
-          [portal.destination.mesh] // Hide the portal destination when drawing from its perspective
-        );
-      } else {
-        // Otherwise recurse using destination world matrix and algined projection matrix
-        this._recursivePortalRender(
-          destWorldMatrix,
-          destWorldMatrixInverse,
-          this.portalObliqueViewFrustum
-            ? portal.destination.getAlignedProjectionMatrix(
-                destWorldMatrix,
-                destWorldMatrixInverse,
-                cameraProjectionMatrix,
-                this.destinationNearPlaneOffset,
-                this.destinationObliqueCutoff
-              )
-            : cameraProjectionMatrix,
-          recursionLevel + 1,
-          portal.destination // We can skip rendering the portal destination when drawing from its perspective
-        );
-      }
+      // Render from destination view
+      this._recursivePortalRender(
+        destWorldMatrix,
+        destWorldMatrixInverse,
+        this.portalObliqueViewFrustum
+          ? portal.destination.getAlignedProjectionMatrix(
+              destWorldMatrix,
+              destWorldMatrixInverse,
+              cameraProjectionMatrix,
+              this.destinationNearPlaneOffset,
+              this.destinationObliqueCutoff
+            )
+          : cameraProjectionMatrix,
+        recursionLevel + 1,
+        portal.destination // We can skip rendering the portal destination when drawing from its perspective
+      );
 
       // Now we decrement stencil buffer to cleanup the incremented values.
       // This is necessary so stencil values relative to this portal are reset for the next portal in the for-loop
 
-      // Disable color and depth masks
+      // Disable color writing
       gl.colorMask(false, false, false, false);
-      gl.depthMask(false);
       gl.disable(gl.DEPTH_TEST);
+      gl.depthMask(false);
       // Enable stencil test/writing
       gl.enable(gl.STENCIL_TEST);
       gl.stencilMask(0xff);
       // Fail when inside this portals frame
       gl.stencilFunc(gl.NOTEQUAL, recursionLevel + 1, 0xff);
-      // Decrement on fail
+      // Decrement regardless of depth test
       gl.stencilOp(gl.DECR, gl.KEEP, gl.KEEP);
 
       this._draw(portal.mesh, cameraWorldMatrix, cameraProjectionMatrix);
     }
 
-    // Disable stencil test and writing to color/stencil buffers
-    gl.disable(gl.STENCIL_TEST);
-    gl.stencilMask(0);
-    gl.colorMask(false, false, false, false);
-    // Now clear the depth buffer (it currently has depth data from portal cam's perspective) and update depth values for each portal frame
-    gl.enable(gl.DEPTH_TEST);
+    // Reset values
+    gl.colorMask(true, true, true, true);
     gl.depthFunc(gl.LESS);
     gl.depthMask(true);
-    gl.clear(gl.DEPTH_BUFFER_BIT);
-
-    // Draw portals into depth buffer. This is necessary so they are correctly in the scene render we're about to do
-    this._drawMultiple(
-      this._portalPrimitives,
-      cameraWorldMatrix,
-      cameraProjectionMatrix,
-      skipPortal ? [skipPortal.mesh] : undefined
-    );
-
-    // Now we draw scene, but only within areas where stencil value >= recursionLevel
-    gl.enable(gl.STENCIL_TEST);
+    gl.disable(gl.STENCIL_TEST);
     gl.stencilMask(0);
-    gl.stencilFunc(gl.LEQUAL, recursionLevel, 0xff);
-    // Re-enable writing to color buffer
-    gl.colorMask(true, true, true, true);
-
-    this._draw(
-      this.scene,
-      cameraWorldMatrix,
-      cameraProjectionMatrix,
-      skipPortal ? [skipPortal.mesh] : undefined
-    );
   }
 
   _draw(object, cameraWorldMatrix, cameraProjectionMatrix, hideObjects) {
