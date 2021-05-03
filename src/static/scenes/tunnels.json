@@ -6,88 +6,120 @@
 	},
 	"geometries": [
 		{
-			"uuid": "47B687F6-26D4-441E-B0EC-FBC954AA91FB",
+			"uuid": "316A82CB-1271-4D39-BD71-59440C49F692",
 			"type": "PlaneGeometry",
-			"width": 40,
-			"height": 40,
+			"width": 60,
+			"height": 60,
 			"widthSegments": 5,
 			"heightSegments": 5
 		},
 		{
-			"uuid": "3DFF1F8E-BFEC-4311-9137-15E41E084130",
+			"uuid": "ACCACBFC-DE12-427E-B079-522B0AFFA3FB",
 			"type": "BoxGeometry",
-			"width": 0.5,
+			"width": 0.25,
 			"height": 5,
-			"depth": 6,
+			"depth": 4,
 			"widthSegments": 1,
 			"heightSegments": 1,
 			"depthSegments": 1
 		},
 		{
-			"uuid": "7B9C971E-0836-45BE-AAF5-80E5EA8A6B29",
+			"uuid": "E2130E18-13F6-4DEE-B94A-C9C846B985E1",
 			"type": "BoxGeometry",
-			"width": 4.5,
-			"height": 0.5,
-			"depth": 6,
+			"width": 6,
+			"height": 0.25,
+			"depth": 4,
 			"widthSegments": 1,
 			"heightSegments": 1,
 			"depthSegments": 1
 		},
 		{
-			"uuid": "A80D7704-BFDC-4CFC-8CCF-DB4AE44B786E",
+			"uuid": "A4862B66-C939-40F8-BCF7-6BE1B2A803C6",
 			"type": "BoxGeometry",
-			"width": 0.5,
+			"width": 0.25,
 			"height": 5,
-			"depth": 6,
+			"depth": 4,
 			"widthSegments": 1,
 			"heightSegments": 1,
 			"depthSegments": 1
 		},
 		{
-			"uuid": "C0B9783E-5233-4C1B-8713-35C0058F84FF",
+			"uuid": "AAA4AF94-7EE9-4F32-B1F4-D1B1F36D193F",
 			"type": "PlaneGeometry",
-			"width": 3.51,
-			"height": 5.01,
+			"width": 5.55,
+			"height": 4.8,
 			"widthSegments": 1,
 			"heightSegments": 1
 		},
 		{
-			"uuid": "5C47DF3C-3386-4272-A42E-2FE6ED1A2191",
-			"type": "BoxGeometry",
-			"width": 0.5,
-			"height": 5,
-			"depth": 15,
-			"widthSegments": 1,
-			"heightSegments": 1,
-			"depthSegments": 1
-		},
-		{
-			"uuid": "B2FCF7A6-D85A-4B23-99A4-CCD7ECF35A09",
-			"type": "BoxGeometry",
-			"width": 4.5,
-			"height": 0.5,
-			"depth": 15,
-			"widthSegments": 1,
-			"heightSegments": 1,
-			"depthSegments": 1
-		},
-		{
-			"uuid": "84E0940D-28AC-4692-B756-A93E27BAF398",
-			"type": "BoxGeometry",
-			"width": 0.5,
-			"height": 5,
-			"depth": 15,
-			"widthSegments": 1,
-			"heightSegments": 1,
-			"depthSegments": 1
-		},
-		{
-			"uuid": "24C16943-401B-4D5E-8EF1-FCC89BEE394C",
+			"uuid": "FE00E7D7-B22F-4E8B-A23B-AD30AF2BDEC1",
 			"type": "PlaneGeometry",
-			"width": 3.51,
-			"height": 5.01,
+			"width": 5.55,
+			"height": 4.8,
 			"widthSegments": 1,
 			"heightSegments": 1
+		},
+		{
+			"uuid": "7A9BFEA4-5340-4809-9CC8-AAA6232007C5",
+			"type": "BoxGeometry",
+			"width": 0.25,
+			"height": 5,
+			"depth": 25,
+			"widthSegments": 1,
+			"heightSegments": 1,
+			"depthSegments": 1
+		},
+		{
+			"uuid": "FB13F408-CB74-42FA-858D-AFF3CC419F6F",
+			"type": "BoxGeometry",
+			"width": 6,
+			"height": 0.25,
+			"depth": 25,
+			"widthSegments": 1,
+			"heightSegments": 1,
+			"depthSegments": 1
+		},
+		{
+			"uuid": "FFE2C3AC-C583-441B-9CA6-D8EED5C87DF5",
+			"type": "BoxGeometry",
+			"width": 0.25,
+			"height": 5,
+			"depth": 25,
+			"widthSegments": 1,
+			"heightSegments": 1,
+			"depthSegments": 1
+		},
+		{
+			"uuid": "ABA2174C-ADED-4EAA-8FA8-A6E54E0E1653",
+			"type": "PlaneGeometry",
+			"width": 5.55,
+			"height": 4.8,
+			"widthSegments": 1,
+			"heightSegments": 1
+		},
+		{
+			"uuid": "9CD1912B-A0AF-4E9C-B0AA-DCDB11B6A532",
+			"type": "PlaneGeometry",
+			"width": 5.55,
+			"height": 4.8,
+			"widthSegments": 1,
+			"heightSegments": 1
+		},
+		{
+			"uuid": "350A529E-713C-49FB-849B-E8805C94514D",
+			"type": "TorusKnotGeometry",
+			"radius": 3,
+			"tube": 0.6,
+			"tubularSegments": 100,
+			"radialSegments": 80,
+			"p": 2,
+			"q": 3
+		},
+		{
+			"uuid": "950982DD-35B7-4887-880E-D37A63D3304E",
+			"type": "IcosahedronGeometry",
+			"radius": 3,
+			"detail": 0
 		}],
 	"materials": [
 		{
@@ -115,8 +147,8 @@
 		{
 			"uuid": "1A7EE587-6516-44A8-B76D-111D4556CF3F",
 			"type": "MeshStandardMaterial",
-			"color": 16777215,
-			"roughness": 1,
+			"color": 1048768,
+			"roughness": 0.5,
 			"metalness": 0,
 			"emissive": 0,
 			"envMapIntensity": 1,
@@ -137,8 +169,8 @@
 		{
 			"uuid": "E456E49A-DE04-47E9-AAC2-23C3B2967069",
 			"type": "MeshStandardMaterial",
-			"color": 16777215,
-			"roughness": 1,
+			"color": 1048768,
+			"roughness": 0.5,
 			"metalness": 0,
 			"emissive": 0,
 			"envMapIntensity": 1,
@@ -159,8 +191,8 @@
 		{
 			"uuid": "24B019D5-0EF4-4A2D-8720-EFAB98D87FC9",
 			"type": "MeshStandardMaterial",
-			"color": 16777215,
-			"roughness": 1,
+			"color": 1048768,
+			"roughness": 0.5,
 			"metalness": 0,
 			"emissive": 0,
 			"envMapIntensity": 1,
@@ -198,10 +230,35 @@
 			"stencilZPass": 7680
 		},
 		{
-			"uuid": "CB3EE89D-CAEF-4870-853B-ED2F2295B79B",
-			"type": "MeshBasicMaterial",
-			"color": 16711910,
-			"reflectivity": 1,
+			"uuid": "FC24F8F5-1EF9-4F40-92F8-9DCD716CE8D9",
+			"type": "MeshStandardMaterial",
+			"color": 14880030,
+			"roughness": 0.24,
+			"metalness": 0,
+			"emissive": 0,
+			"envMapIntensity": 1,
+			"refractionRatio": 0.98,
+			"depthFunc": 3,
+			"depthTest": true,
+			"depthWrite": true,
+			"colorWrite": true,
+			"stencilWrite": false,
+			"stencilWriteMask": 255,
+			"stencilFunc": 519,
+			"stencilRef": 0,
+			"stencilFuncMask": 255,
+			"stencilFail": 7680,
+			"stencilZFail": 7680,
+			"stencilZPass": 7680
+		},
+		{
+			"uuid": "76EB08A2-02ED-4EB3-AAB0-30D8501DE3A1",
+			"type": "MeshStandardMaterial",
+			"color": 15107840,
+			"roughness": 0.32,
+			"metalness": 0,
+			"emissive": 0,
+			"envMapIntensity": 1,
 			"refractionRatio": 0.98,
 			"depthFunc": 3,
 			"depthTest": true,
@@ -227,13 +284,59 @@
 		"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],
 		"children": [
 			{
+				"uuid": "273CF505-9572-4B39-97E1-CBB1021D2433",
+				"type": "DirectionalLight",
+				"name": "DirectionalLight",
+				"layers": 1,
+				"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,-15.358626,11.382634,-21.181437,1],
+				"color": 16773338,
+				"intensity": 0.2,
+				"shadow": {
+					"camera": {
+						"uuid": "18198415-4861-4AA7-BA4C-A8478B46480A",
+						"type": "OrthographicCamera",
+						"layers": 1,
+						"zoom": 1,
+						"left": -5,
+						"right": 5,
+						"top": 5,
+						"bottom": -5,
+						"near": 0.5,
+						"far": 500
+					}
+				}
+			},
+			{
+				"uuid": "8C75DBA8-18A8-41B9-987F-92CB346A4A2E",
+				"type": "DirectionalLight",
+				"name": "DirectionalLight",
+				"layers": 1,
+				"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,5.978602,15.783725,19.197632,1],
+				"color": 16773858,
+				"intensity": 0.9,
+				"shadow": {
+					"camera": {
+						"uuid": "1C3E993E-4C90-4F85-B788-E639AAF9DD17",
+						"type": "OrthographicCamera",
+						"layers": 1,
+						"zoom": 1,
+						"left": -5,
+						"right": 5,
+						"top": 5,
+						"bottom": -5,
+						"near": 0.5,
+						"far": 500
+					}
+				}
+			},
+			{
 				"uuid": "6E5910CC-FE57-4455-876A-81C5B30D6A6F",
 				"type": "AmbientLight",
 				"name": "lightAmbient",
 				"layers": 1,
 				"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,0,12.209619,0,1],
-				"color": 16762272,
-				"intensity": 0
+				"color": 16769743,
+				"intensity": 0.08
 			},
 			{
 				"uuid": "177E31D2-3CE4-4E9D-BA9A-4DD941136FDC",
@@ -252,7 +355,7 @@
 						},
 						"layers": 1,
 						"matrix": [1,0,0,0,0,0,-1,0,0,1,0,0,0,0,0,1],
-						"geometry": "47B687F6-26D4-441E-B0EC-FBC954AA91FB",
+						"geometry": "316A82CB-1271-4D39-BD71-59440C49F692",
 						"material": "BB0CE5A4-6579-4368-B497-A059A664357C"
 					},
 					{
@@ -267,8 +370,8 @@
 								"type": "Mesh",
 								"name": "Box",
 								"layers": 1,
-								"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,-2,2.49,0,1],
-								"geometry": "3DFF1F8E-BFEC-4311-9137-15E41E084130",
+								"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,-2.876198,2.49,0,1],
+								"geometry": "ACCACBFC-DE12-427E-B079-522B0AFFA3FB",
 								"material": "1A7EE587-6516-44A8-B76D-111D4556CF3F"
 							},
 							{
@@ -276,8 +379,8 @@
 								"type": "Mesh",
 								"name": "Box",
 								"layers": 1,
-								"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,0,4.9,0,1],
-								"geometry": "7B9C971E-0836-45BE-AAF5-80E5EA8A6B29",
+								"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,0,4.879,0,1],
+								"geometry": "E2130E18-13F6-4DEE-B94A-C9C846B985E1",
 								"material": "E456E49A-DE04-47E9-AAC2-23C3B2967069"
 							},
 							{
@@ -285,8 +388,8 @@
 								"type": "Mesh",
 								"name": "Box",
 								"layers": 1,
-								"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,2,2.49,0,1],
-								"geometry": "A80D7704-BFDC-4CFC-8CCF-DB4AE44B786E",
+								"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,2.875,2.49,0,1],
+								"geometry": "A4862B66-C939-40F8-BCF7-6BE1B2A803C6",
 								"material": "24B019D5-0EF4-4A2D-8720-EFAB98D87FC9"
 							},
 							{
@@ -297,8 +400,8 @@
 									"destination": "p_tunnel2_1"
 								},
 								"layers": 1,
-								"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,0,2.5,2.955218,1],
-								"geometry": "C0B9783E-5233-4C1B-8713-35C0058F84FF",
+								"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,0,2.375,1.9,1],
+								"geometry": "AAA4AF94-7EE9-4F32-B1F4-D1B1F36D193F",
 								"material": "2181C0E8-E0C0-49DD-84E8-6A62E4627CD3"
 							},
 							{
@@ -309,116 +412,88 @@
 									"destination": "p_tunnel2_2"
 								},
 								"layers": 1,
-								"matrix": [-1,0,0,0,0,1,0,0,0,0,-1,0,0,2.5,-2.931318,1],
-								"geometry": "C0B9783E-5233-4C1B-8713-35C0058F84FF",
+								"matrix": [-1,0,0,0,0,1,0,0,0,0,-1,0,0,2.375,-1.9,1],
+								"geometry": "FE00E7D7-B22F-4E8B-A23B-AD30AF2BDEC1",
 								"material": "2181C0E8-E0C0-49DD-84E8-6A62E4627CD3"
 							}]
 					},
 					{
-						"uuid": "44906034-6D8D-44EB-839B-979C36C42068",
+						"uuid": "4A6269AE-9ECA-4CBA-843C-CA6C1C2D8682",
 						"type": "Group",
 						"name": "tunnel",
 						"layers": 1,
 						"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,-8,0,-3,1],
 						"children": [
 							{
-								"uuid": "9DDC00E5-05FE-43C9-8AA8-2516F3AF4221",
+								"uuid": "23BBC04E-9E44-4AF2-BBDB-6532D5535C92",
 								"type": "Mesh",
 								"name": "Box",
 								"layers": 1,
-								"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,-2,2.49,0,1],
-								"geometry": "5C47DF3C-3386-4272-A42E-2FE6ED1A2191",
+								"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,-2.876198,2.49,0,1],
+								"geometry": "7A9BFEA4-5340-4809-9CC8-AAA6232007C5",
 								"material": "1A7EE587-6516-44A8-B76D-111D4556CF3F"
 							},
 							{
-								"uuid": "A4DFEA1E-3485-439E-98FD-EBECF6C9DDD7",
+								"uuid": "58EDEB2D-12D0-42FC-B5C5-171911340AD1",
 								"type": "Mesh",
 								"name": "Box",
 								"layers": 1,
-								"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,0,4.9,0,1],
-								"geometry": "B2FCF7A6-D85A-4B23-99A4-CCD7ECF35A09",
+								"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,0,4.879,0,1],
+								"geometry": "FB13F408-CB74-42FA-858D-AFF3CC419F6F",
 								"material": "E456E49A-DE04-47E9-AAC2-23C3B2967069"
 							},
 							{
-								"uuid": "8B679E8A-50AC-4C96-A34D-894042476803",
+								"uuid": "5FAD3054-EE60-469F-81BB-E2DB957B3D83",
 								"type": "Mesh",
 								"name": "Box",
 								"layers": 1,
-								"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,2,2.49,0,1],
-								"geometry": "84E0940D-28AC-4692-B756-A93E27BAF398",
+								"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,2.875,2.49,0,1],
+								"geometry": "FFE2C3AC-C583-441B-9CA6-D8EED5C87DF5",
 								"material": "24B019D5-0EF4-4A2D-8720-EFAB98D87FC9"
 							},
 							{
-								"uuid": "04115B60-CEEA-48B8-910B-4BD9350ECCE7",
+								"uuid": "8B3E89EE-1FF4-4C74-9F01-3DDED9BDBB1C",
 								"type": "Mesh",
 								"name": "p_tunnel2_1",
 								"userData": {
 									"destination": "p_tunnel_1"
 								},
 								"layers": 1,
-								"matrix": [-1,0,0,0,0,1,0,0,0,0,-1,0,0,2.5,7.443726,1],
-								"geometry": "C0B9783E-5233-4C1B-8713-35C0058F84FF",
+								"matrix": [-1,0,0,0,0,1,0,0,0,0,-1,0,0,2.375,12.4,1],
+								"geometry": "ABA2174C-ADED-4EAA-8FA8-A6E54E0E1653",
 								"material": "2181C0E8-E0C0-49DD-84E8-6A62E4627CD3"
 							},
 							{
-								"uuid": "7B1E7B15-C6BA-4ACA-BD2A-B4F6FD1B0A82",
+								"uuid": "F0C678E3-468D-476D-A267-9902A441DEEF",
 								"type": "Mesh",
 								"name": "p_tunnel2_2",
 								"userData": {
 									"destination": "p_tunnel_2"
 								},
 								"layers": 1,
-								"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,0,2.5,-7.402284,1],
-								"geometry": "24C16943-401B-4D5E-8EF1-FCC89BEE394C",
-								"material": "CB3EE89D-CAEF-4870-853B-ED2F2295B79B"
+								"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,0,2.375,-12.4,1],
+								"geometry": "9CD1912B-A0AF-4E9C-B0AA-DCDB11B6A532",
+								"material": "2181C0E8-E0C0-49DD-84E8-6A62E4627CD3"
 							}]
 					}]
 			},
 			{
-				"uuid": "8C75DBA8-18A8-41B9-987F-92CB346A4A2E",
-				"type": "DirectionalLight",
-				"name": "DirectionalLight",
+				"uuid": "FE36E232-B561-4190-B28A-4BD93A5D2A31",
+				"type": "Mesh",
+				"name": "TorusKnot",
 				"layers": 1,
-				"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,11.950237,20.785727,3.621725,1],
-				"color": 16773858,
-				"intensity": 0.7,
-				"shadow": {
-					"camera": {
-						"uuid": "1C3E993E-4C90-4F85-B788-E639AAF9DD17",
-						"type": "OrthographicCamera",
-						"layers": 1,
-						"zoom": 1,
-						"left": -5,
-						"right": 5,
-						"top": 5,
-						"bottom": -5,
-						"near": 0.5,
-						"far": 500
-					}
-				}
+				"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,7.793797,4.962666,-19.437393,1],
+				"geometry": "350A529E-713C-49FB-849B-E8805C94514D",
+				"material": "FC24F8F5-1EF9-4F40-92F8-9DCD716CE8D9"
 			},
 			{
-				"uuid": "273CF505-9572-4B39-97E1-CBB1021D2433",
-				"type": "DirectionalLight",
-				"name": "DirectionalLight",
+				"uuid": "24D82F62-0EE0-4E67-9A94-B6F5E45257A4",
+				"type": "Mesh",
+				"name": "Icosahedron",
 				"layers": 1,
-				"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,-15.358626,11.382634,-21.181437,1],
-				"color": 16773338,
-				"intensity": 0.3,
-				"shadow": {
-					"camera": {
-						"uuid": "18198415-4861-4AA7-BA4C-A8478B46480A",
-						"type": "OrthographicCamera",
-						"layers": 1,
-						"zoom": 1,
-						"left": -5,
-						"right": 5,
-						"top": 5,
-						"bottom": -5,
-						"near": 0.5,
-						"far": 500
-					}
-				}
+				"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,-8.249693,2.685809,-23.644521,1],
+				"geometry": "950982DD-35B7-4887-880E-D37A63D3304E",
+				"material": "76EB08A2-02ED-4EB3-AAB0-30D8501DE3A1"
 			}]
 	}
 }

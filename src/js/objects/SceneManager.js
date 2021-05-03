@@ -15,7 +15,7 @@ class SceneManager {
     }
 
     /* ----- OPTIONS ----- */
-    this.maxPortalRecursion = 1;
+    this.maxPortalRecursion = 2;
     this.destinationNearPlaneOffset = 0.02;
     this.destinationObliqueCutoff = 0.009;
     this.renderPortals = true;
@@ -484,9 +484,9 @@ class SceneManager {
     const inverseProjection = this.camera.projectionMatrixInverse.clone();
     for (let i = 0; i < this._portals.length; i++) {
       const portal = this._portals[i];
-      const destWorldMatrix = portal.getDestCameraWorldMatrix(
-        this.camera.matrixWorld
-      );
+      const destWorldMatrix = portal.destinationTransform
+        .clone()
+        .multiply(this.camera.matrixWorld);
       const cam = this._portalCameras[i];
       cam.matrixWorld.copy(destWorldMatrix);
       cam.projectionMatrixInverse = inverseProjection;
