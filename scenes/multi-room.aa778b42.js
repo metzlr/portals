@@ -30107,7 +30107,7 @@ class SceneManager {
       console.error("'scene' is undefined");
     }
     /*----- OPTIONS -----*/
-    this.maxPortalRecursion = 1;
+    this.maxPortalRecursion = 2;
     this.destinationNearPlaneOffset = 0.02;
     this.destinationObliqueCutoff = 0.009;
     this.renderPortals = true;
@@ -30132,7 +30132,9 @@ class SceneManager {
     this.renderer.outputEncoding = _three.sRGBEncoding;
     this.renderer.autoClear = false;
     this.renderer.info.autoReset = false;
-    this.renderer.setClearColor("#bbb");
+    // Use clear color instead of scene background
+    this.renderer.setClearColor(this.scene.background ?? "#D1D7E5");
+    if (this.scene.background) this.scene.background = null;
     this.screenSize = new _three.Vector2();
     this.renderer.getSize(this.screenSize);
     this._clock = new _three.Clock();
@@ -30419,7 +30421,7 @@ class SceneManager {
     const inverseProjection = this.camera.projectionMatrixInverse.clone();
     for (let i = 0; i < this._portals.length; i++) {
       const portal = this._portals[i];
-      const destWorldMatrix = portal.getDestCameraWorldMatrix(this.camera.matrixWorld);
+      const destWorldMatrix = portal.destinationTransform.clone().multiply(this.camera.matrixWorld);
       const cam = this._portalCameras[i];
       cam.matrixWorld.copy(destWorldMatrix);
       cam.projectionMatrixInverse = inverseProjection;
@@ -30444,7 +30446,7 @@ class SceneManager {
 }
 exports.default = SceneManager;
 
-},{"three":"1lq1c","./FirstPersonControls":"6cQMb","./PortalTraveller":"726I2","./Portal.js":"6v5md","three/examples/jsm/libs/stats.module":"24OPR","./SceneGUI":"TbHXq","@parcel/transformer-js/lib/esmodule-helpers.js":"5gA8y","../shaders/fullscreen-quad.vert":"7bggO","../shaders/fullscreen-quad.frag":"3nHBr"}],"6cQMb":[function(require,module,exports) {
+},{"three":"1lq1c","./FirstPersonControls":"6cQMb","./PortalTraveller":"726I2","./Portal.js":"6v5md","three/examples/jsm/libs/stats.module":"24OPR","./SceneGUI":"TbHXq","../shaders/fullscreen-quad.vert":"7bggO","../shaders/fullscreen-quad.frag":"3nHBr","@parcel/transformer-js/lib/esmodule-helpers.js":"5gA8y"}],"6cQMb":[function(require,module,exports) {
 var _parcelHelpers = require("@parcel/transformer-js/lib/esmodule-helpers.js");
 _parcelHelpers.defineInteropFlag(exports);
 var _three = require("three");

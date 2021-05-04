@@ -446,15 +446,15 @@ var _three = require("three");
 var _objectsSceneManager = require("../objects/SceneManager");
 var _parcelHelpers = require("@parcel/transformer-js/lib/esmodule-helpers.js");
 var _objectsSceneManagerDefault = _parcelHelpers.interopDefault(_objectsSceneManager);
-var _urlStaticScenesPortal_recursiveJson = require("url:../../static/scenes/portal_recursive.json");
-var _urlStaticScenesPortal_recursiveJsonDefault = _parcelHelpers.interopDefault(_urlStaticScenesPortal_recursiveJson);
+var _urlStaticScenesPortal_recursive3Json = require("url:../../static/scenes/portal_recursive3.json");
+var _urlStaticScenesPortal_recursive3JsonDefault = _parcelHelpers.interopDefault(_urlStaticScenesPortal_recursive3Json);
 var _urlStaticTexturesDark_gridPng = require("url:../../static/textures/dark_grid.png");
 var _urlStaticTexturesDark_gridPngDefault = _parcelHelpers.interopDefault(_urlStaticTexturesDark_gridPng);
 (function () {
   const canvas = document.getElementById("main-canvas");
   let manager;
   const loader = new _three.ObjectLoader();
-  loader.load(_urlStaticScenesPortal_recursiveJsonDefault.default, obj => {
+  loader.load(_urlStaticScenesPortal_recursive3JsonDefault.default, obj => {
     manager = new _objectsSceneManagerDefault.default(canvas, obj);
     manager.camera.position.set(0, 6, 6);
     manager.camera.lookAt(new _three.Vector3(0, 0, 0));
@@ -480,7 +480,7 @@ var _urlStaticTexturesDark_gridPngDefault = _parcelHelpers.interopDefault(_urlSt
   }
 })();
 
-},{"three":"1lq1c","../objects/SceneManager":"7qPc2","url:../../static/scenes/portal_recursive.json":"6Otdt","url:../../static/textures/dark_grid.png":"0Nyzt","@parcel/transformer-js/lib/esmodule-helpers.js":"5gA8y"}],"1lq1c":[function(require,module,exports) {
+},{"three":"1lq1c","../objects/SceneManager":"7qPc2","url:../../static/textures/dark_grid.png":"0Nyzt","@parcel/transformer-js/lib/esmodule-helpers.js":"5gA8y","url:../../static/scenes/portal_recursive3.json":"6YEgV"}],"1lq1c":[function(require,module,exports) {
 var define;
 /**
 * @license
@@ -30119,7 +30119,7 @@ class SceneManager {
       console.error("'scene' is undefined");
     }
     /*----- OPTIONS -----*/
-    this.maxPortalRecursion = 1;
+    this.maxPortalRecursion = 2;
     this.destinationNearPlaneOffset = 0.02;
     this.destinationObliqueCutoff = 0.009;
     this.renderPortals = true;
@@ -30144,7 +30144,9 @@ class SceneManager {
     this.renderer.outputEncoding = _three.sRGBEncoding;
     this.renderer.autoClear = false;
     this.renderer.info.autoReset = false;
-    this.renderer.setClearColor("#bbb");
+    // Use clear color instead of scene background
+    this.renderer.setClearColor(this.scene.background ?? "#D1D7E5");
+    if (this.scene.background) this.scene.background = null;
     this.screenSize = new _three.Vector2();
     this.renderer.getSize(this.screenSize);
     this._clock = new _three.Clock();
@@ -30431,7 +30433,7 @@ class SceneManager {
     const inverseProjection = this.camera.projectionMatrixInverse.clone();
     for (let i = 0; i < this._portals.length; i++) {
       const portal = this._portals[i];
-      const destWorldMatrix = portal.getDestCameraWorldMatrix(this.camera.matrixWorld);
+      const destWorldMatrix = portal.destinationTransform.clone().multiply(this.camera.matrixWorld);
       const cam = this._portalCameras[i];
       cam.matrixWorld.copy(destWorldMatrix);
       cam.projectionMatrixInverse = inverseProjection;
@@ -30456,7 +30458,7 @@ class SceneManager {
 }
 exports.default = SceneManager;
 
-},{"three":"1lq1c","./FirstPersonControls":"6cQMb","./PortalTraveller":"726I2","./Portal.js":"6v5md","three/examples/jsm/libs/stats.module":"24OPR","./SceneGUI":"TbHXq","@parcel/transformer-js/lib/esmodule-helpers.js":"5gA8y","../shaders/fullscreen-quad.vert":"7bggO","../shaders/fullscreen-quad.frag":"3nHBr"}],"6cQMb":[function(require,module,exports) {
+},{"three":"1lq1c","./FirstPersonControls":"6cQMb","./PortalTraveller":"726I2","./Portal.js":"6v5md","three/examples/jsm/libs/stats.module":"24OPR","./SceneGUI":"TbHXq","../shaders/fullscreen-quad.vert":"7bggO","../shaders/fullscreen-quad.frag":"3nHBr","@parcel/transformer-js/lib/esmodule-helpers.js":"5gA8y"}],"6cQMb":[function(require,module,exports) {
 var _parcelHelpers = require("@parcel/transformer-js/lib/esmodule-helpers.js");
 _parcelHelpers.defineInteropFlag(exports);
 var _three = require("three");
@@ -33577,8 +33579,8 @@ var define;
 module.exports="#version 300 es\n#define GLSLIFY 1\nin vec2 position;\n// out vec2 texcoords; // texcoords are in the normalized [0,1] range for the viewport-filling quad part of the triangle\n\nvoid main() {\n  gl_Position = vec4(position, 1.0, 1.0);\n  // textcoords = 0.5 * gl_Position.xy + vec2(0.5);\n}";
 },{}],"3nHBr":[function(require,module,exports) {
 module.exports="#version 300 es\nprecision highp float;\n#define GLSLIFY 1\n\nout vec4 outColor;\n\nvoid main() {\n  outColor = vec4(1.0, 0, 0, 1.0);\n}";
-},{}],"6Otdt":[function(require,module,exports) {
-module.exports = require('./bundle-url').getBundleURL() + "../portal_recursive.70801c75.json"
+},{}],"0Nyzt":[function(require,module,exports) {
+module.exports = require('./bundle-url').getBundleURL() + "../dark_grid.3c5b9dd2.png"
 },{"./bundle-url":"3seVR"}],"3seVR":[function(require,module,exports) {
 "use strict";
 
@@ -33625,8 +33627,8 @@ function getOrigin(url) {
 exports.getBundleURL = getBundleURLCached;
 exports.getBaseURL = getBaseURL;
 exports.getOrigin = getOrigin;
-},{}],"0Nyzt":[function(require,module,exports) {
-module.exports = require('./bundle-url').getBundleURL() + "../dark_grid.3c5b9dd2.png"
+},{}],"6YEgV":[function(require,module,exports) {
+module.exports = require('./bundle-url').getBundleURL() + "../portal_recursive3.57415ae4.json"
 },{"./bundle-url":"3seVR"}]},["6PMwY","1hSWN"], "1hSWN", "parcelRequireeca4")
 
 //# sourceMappingURL=portal-recursive.f26c7412.js.map
