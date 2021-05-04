@@ -468,7 +468,7 @@ var _urlStaticScenesTunnelsJsonDefault = _parcelHelpers.interopDefault(_urlStati
   }
 })();
 
-},{"three":"1lq1c","../objects/SceneManager":"7qPc2","@parcel/transformer-js/lib/esmodule-helpers.js":"5gA8y","url:../../static/scenes/tunnels.json":"6sPdc"}],"1lq1c":[function(require,module,exports) {
+},{"three":"1lq1c","../objects/SceneManager":"7qPc2","url:../../static/scenes/tunnels.json":"6sPdc","@parcel/transformer-js/lib/esmodule-helpers.js":"5gA8y"}],"1lq1c":[function(require,module,exports) {
 var define;
 /**
 * @license

@@ -446,15 +446,15 @@ var _three = require("three");
 var _objectsSceneManager = require("../objects/SceneManager");
 var _parcelHelpers = require("@parcel/transformer-js/lib/esmodule-helpers.js");
 var _objectsSceneManagerDefault = _parcelHelpers.interopDefault(_objectsSceneManager);
-var _urlStaticScenesPortal_recursive3Json = require("url:../../static/scenes/portal_recursive3.json");
-var _urlStaticScenesPortal_recursive3JsonDefault = _parcelHelpers.interopDefault(_urlStaticScenesPortal_recursive3Json);
+var _urlStaticScenesPortal_recursiveJson = require("url:../../static/scenes/portal_recursive.json");
+var _urlStaticScenesPortal_recursiveJsonDefault = _parcelHelpers.interopDefault(_urlStaticScenesPortal_recursiveJson);
 var _urlStaticTexturesDark_gridPng = require("url:../../static/textures/dark_grid.png");
 var _urlStaticTexturesDark_gridPngDefault = _parcelHelpers.interopDefault(_urlStaticTexturesDark_gridPng);
 (function () {
   const canvas = document.getElementById("main-canvas");
   let manager;
   const loader = new _three.ObjectLoader();
-  loader.load(_urlStaticScenesPortal_recursive3JsonDefault.default, obj => {
+  loader.load(_urlStaticScenesPortal_recursiveJsonDefault.default, obj => {
     manager = new _objectsSceneManagerDefault.default(canvas, obj);
     manager.camera.position.set(0, 6, 6);
     manager.camera.lookAt(new _three.Vector3(0, 0, 0));
@@ -480,7 +480,7 @@ var _urlStaticTexturesDark_gridPngDefault = _parcelHelpers.interopDefault(_urlSt
   }
 })();
 
-},{"three":"1lq1c","../objects/SceneManager":"7qPc2","url:../../static/textures/dark_grid.png":"0Nyzt","@parcel/transformer-js/lib/esmodule-helpers.js":"5gA8y","url:../../static/scenes/portal_recursive3.json":"6YEgV"}],"1lq1c":[function(require,module,exports) {
+},{"three":"1lq1c","../objects/SceneManager":"7qPc2","url:../../static/scenes/portal_recursive.json":"6Otdt","url:../../static/textures/dark_grid.png":"0Nyzt","@parcel/transformer-js/lib/esmodule-helpers.js":"5gA8y"}],"1lq1c":[function(require,module,exports) {
 var define;
 /**
 * @license
@@ -33579,8 +33579,8 @@ var define;
 module.exports="#version 300 es\n#define GLSLIFY 1\nin vec2 position;\n// out vec2 texcoords; // texcoords are in the normalized [0,1] range for the viewport-filling quad part of the triangle\n\nvoid main() {\n  gl_Position = vec4(position, 1.0, 1.0);\n  // textcoords = 0.5 * gl_Position.xy + vec2(0.5);\n}";
 },{}],"3nHBr":[function(require,module,exports) {
 module.exports="#version 300 es\nprecision highp float;\n#define GLSLIFY 1\n\nout vec4 outColor;\n\nvoid main() {\n  outColor = vec4(1.0, 0, 0, 1.0);\n}";
-},{}],"0Nyzt":[function(require,module,exports) {
-module.exports = require('./bundle-url').getBundleURL() + "../dark_grid.3c5b9dd2.png"
+},{}],"6Otdt":[function(require,module,exports) {
+module.exports = require('./bundle-url').getBundleURL() + "../portal_recursive.70801c75.json"
 },{"./bundle-url":"3seVR"}],"3seVR":[function(require,module,exports) {
 "use strict";
 
@@ -33627,8 +33627,8 @@ function getOrigin(url) {
 exports.getBundleURL = getBundleURLCached;
 exports.getBaseURL = getBaseURL;
 exports.getOrigin = getOrigin;
-},{}],"6YEgV":[function(require,module,exports) {
-module.exports = require('./bundle-url').getBundleURL() + "../portal_recursive3.57415ae4.json"
+},{}],"0Nyzt":[function(require,module,exports) {
+module.exports = require('./bundle-url').getBundleURL() + "../dark_grid.3c5b9dd2.png"
 },{"./bundle-url":"3seVR"}]},["6PMwY","1hSWN"], "1hSWN", "parcelRequireeca4")
 
 //# sourceMappingURL=portal-recursive.f26c7412.js.map
