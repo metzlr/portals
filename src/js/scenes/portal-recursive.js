@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import SceneManager from "../objects/SceneManager";
-import sceneURL from "url:../../static/scenes/portal_recursive.json";
+import sceneURL from "url:../../static/scenes/portal_recursive3.json";
 import darkGridTexture from "url:../../static/textures/dark_grid.png";
 
 (function () {

@@ -55,7 +55,11 @@ class SceneManager {
     this.renderer.outputEncoding = THREE.sRGBEncoding;
     this.renderer.autoClear = false;
     this.renderer.info.autoReset = false;
-    this.renderer.setClearColor("#bbb");
+
+    // Use clear color instead of scene background
+    this.renderer.setClearColor(this.scene.background ?? "#D1D7E5");
+    if (this.scene.background) this.scene.background = null;
+
     this.screenSize = new THREE.Vector2();
     this.renderer.getSize(this.screenSize);
 
