@@ -443,19 +443,16 @@ id) /*: string*/
 
 },{}],"4jE53":[function(require,module,exports) {
 var _three = require("three");
-var _objectsSceneManager = require("../objects/SceneManager");
-var _parcelHelpers = require("@parcel/transformer-js/lib/esmodule-helpers.js");
-var _objectsSceneManagerDefault = _parcelHelpers.interopDefault(_objectsSceneManager);
+var _sceneSetupJs = require("../scene-setup.js");
 var _urlStaticScenesPortal_dimensionsJson = require("url:../../static/scenes/portal_dimensions.json");
+var _parcelHelpers = require("@parcel/transformer-js/lib/esmodule-helpers.js");
 var _urlStaticScenesPortal_dimensionsJsonDefault = _parcelHelpers.interopDefault(_urlStaticScenesPortal_dimensionsJson);
 var _urlStaticTexturesDark_gridPng = require("url:../../static/textures/dark_grid.png");
 var _urlStaticTexturesDark_gridPngDefault = _parcelHelpers.interopDefault(_urlStaticTexturesDark_gridPng);
 (function () {
-  const canvas = document.getElementById("main-canvas");
   let manager;
-  const loader = new _three.ObjectLoader();
-  loader.load(_urlStaticScenesPortal_dimensionsJsonDefault.default, obj => {
-    manager = new _objectsSceneManagerDefault.default(canvas, obj);
+  _sceneSetupJs.setupScene(_urlStaticScenesPortal_dimensionsJsonDefault.default, "main-canvas", sceneManager => {
+    manager = sceneManager;
     manager.camera.position.set(0, 6, 6);
     manager.camera.lookAt(new _three.Vector3(0, 0, 0));
     const world = manager.scene.getObjectByName("world");
@@ -480,7 +477,7 @@ var _urlStaticTexturesDark_gridPngDefault = _parcelHelpers.interopDefault(_urlSt
   }
 })();
 
-},{"three":"1lq1c","../objects/SceneManager":"7qPc2","url:../../static/scenes/portal_dimensions.json":"2gd61","url:../../static/textures/dark_grid.png":"0Nyzt","@parcel/transformer-js/lib/esmodule-helpers.js":"5gA8y"}],"1lq1c":[function(require,module,exports) {
+},{"three":"1lq1c","../scene-setup.js":"1nWgd","url:../../static/scenes/portal_dimensions.json":"2gd61","url:../../static/textures/dark_grid.png":"0Nyzt","@parcel/transformer-js/lib/esmodule-helpers.js":"5gA8y"}],"1lq1c":[function(require,module,exports) {
 var define;
 /**
 * @license
@@ -30095,7 +30092,47 @@ var define;
   });
 });
 
-},{}],"7qPc2":[function(require,module,exports) {
+},{}],"1nWgd":[function(require,module,exports) {
+var _parcelHelpers = require("@parcel/transformer-js/lib/esmodule-helpers.js");
+_parcelHelpers.defineInteropFlag(exports);
+_parcelHelpers.export(exports, "setupScene", function () {
+  return setupScene;
+});
+var _three = require("three");
+var _objectsSceneManager = require("./objects/SceneManager");
+var _objectsSceneManagerDefault = _parcelHelpers.interopDefault(_objectsSceneManager);
+const setupScene = (jsonUrl, canvasId, onSuccess) => {
+  const canvas = document.getElementById(canvasId);
+  if (canvas === null) {
+    displayError(`Unable to find canvas with ID: ${canvasId}`);
+    return;
+  }
+  const loader = new _three.ObjectLoader();
+  loader.load(jsonUrl, obj => {
+    try {
+      const manager = new _objectsSceneManagerDefault.default(canvas, obj);
+      onSuccess(manager);
+    } catch (error) {
+      displayError("Looks like your browser doesn't support WebGL2 yet. Try visiting this page in the latest version of Chrome or Firefox.");
+    }
+  }, undefined, error => {
+    displayError("Failed to load scene data: " + error);
+  });
+};
+const errorHtml = `
+  <div class="error-container">
+    <h2>Whoops...</h2>
+    <p id="error-message">Unknown error</p>
+  </div>  
+`;
+const displayError = message => {
+  console.error(message);
+  document.body.innerHTML = errorHtml;
+  const messageElement = document.getElementById("error-message");
+  messageElement.innerText = message;
+};
+
+},{"three":"1lq1c","./objects/SceneManager":"7qPc2","@parcel/transformer-js/lib/esmodule-helpers.js":"5gA8y"}],"7qPc2":[function(require,module,exports) {
 var _parcelHelpers = require("@parcel/transformer-js/lib/esmodule-helpers.js");
 _parcelHelpers.defineInteropFlag(exports);
 var _three = require("three");
@@ -30144,6 +30181,9 @@ class SceneManager {
     this.renderer.outputEncoding = _three.sRGBEncoding;
     this.renderer.autoClear = false;
     this.renderer.info.autoReset = false;
+    if (!this.renderer.capabilities.isWebGL2) {
+      throw new Error("Unable to create WebGL2 rendering context");
+    }
     // Use clear color instead of scene background
     this.renderer.setClearColor(this.scene.background ?? "#D1D7E5");
     if (this.scene.background) this.scene.background = null;
@@ -30154,7 +30194,8 @@ class SceneManager {
     this.stats.showPanel(0);
     // 0: fps, 1: ms, 2: mb, 3+: custom
     document.body.appendChild(this.stats.dom);
-    this.controls = new _FirstPersonControlsDefault.default(this.camera, this.scene, this.renderer.domElement);
+    this.controls = new _FirstPersonControlsDefault.default(this.camera, this.renderer.domElement);
+    this.scene.add(this.controls.getObject());
     this._portalColliderHelper = new _three.Box3Helper(new _three.Box3(), "#00ff00");
     this._portalColliderHelper.matrixAutoUpdate = false;
     this._portalCameraHelpers = [];
@@ -30465,7 +30506,7 @@ var _three = require("three");
 var _threeExamplesJsmControlsPointerLockControlsJs = require("three/examples/jsm/controls/PointerLockControls.js");
 const _vector1 = new _three.Vector3();
 class FirstPersonControls {
-  constructor(camera, scene, domElement) {
+  constructor(camera, domElement) {
     this.camera = camera;
     this.moveForward = this.moveBackward = this.moveLeft = this.moveRight = this.canJump = this.freeCam = this.flyUp = this.flyDown = false;
     this.velocity = new _three.Vector3();
@@ -30544,7 +30585,9 @@ class FirstPersonControls {
     document.addEventListener("keyup", onKeyUp);
     this.distToFeet = 3;
     this.raycaster = new _three.Raycaster(new _three.Vector3(), new _three.Vector3(0, -1, 0), 0, this.distToFeet + 0.001);
-    scene.add(this._controls.getObject());
+  }
+  getObject() {
+    return this._controls.getObject();
   }
   update(deltaTime, collidables) {
     this.camera.getWorldScale(_vector1);

@@ -1,0 +1,25 @@
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%; /* force body to fill window */
+  font-family: "Open Sans", sans-serif;
+  color: #242424;
+}
+#main-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.error-container {
+  display: flex;
+  flex-flow: column wrap;
+  justify-content: center;
+  align-items: center;
+}
+
+/*# sourceMappingURL=index.e0cabd47.css.map */
