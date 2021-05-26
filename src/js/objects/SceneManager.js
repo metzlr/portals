@@ -56,6 +56,10 @@ class SceneManager {
     this.renderer.autoClear = false;
     this.renderer.info.autoReset = false;
 
+    if (!this.renderer.capabilities.isWebGL2) {
+      throw new Error("Unable to create WebGL2 rendering context");
+    }
+
     // Use clear color instead of scene background
     this.renderer.setClearColor(this.scene.background ?? "#D1D7E5");
     if (this.scene.background) this.scene.background = null;
@@ -71,9 +75,9 @@ class SceneManager {
 
     this.controls = new FirstPersonControls(
       this.camera,
-      this.scene,
       this.renderer.domElement
     );
+    this.scene.add(this.controls.getObject());
 
     this._portalColliderHelper = new THREE.Box3Helper(
       new THREE.Box3(),

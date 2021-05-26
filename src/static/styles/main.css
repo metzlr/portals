@@ -14,3 +14,10 @@ body {
   height: 100%;
   display: block;
 }
+
+.error-container {
+  display: flex;
+  flex-flow: column wrap;
+  justify-content: center;
+  align-items: center;
+}

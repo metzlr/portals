@@ -4,7 +4,7 @@ import { PointerLockControls } from "three/examples/jsm/controls/PointerLockCont
 const _vector1 = new THREE.Vector3();
 
 export default class FirstPersonControls {
-  constructor(camera, scene, domElement) {
+  constructor(camera, domElement) {
     this.camera = camera;
 
     this.moveForward = this.moveBackward = this.moveLeft = this.moveRight = this.canJump = this.freeCam = this.flyUp = this.flyDown = false;
@@ -103,8 +103,10 @@ export default class FirstPersonControls {
       0,
       this.distToFeet + 0.001 // Fudge factor to reduce false positives/negatives
     );
+  }
 
-    scene.add(this._controls.getObject());
+  getObject() {
+    return this._controls.getObject();
   }
 
   update(deltaTime, collidables) {

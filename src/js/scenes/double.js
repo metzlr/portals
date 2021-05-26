@@ -1,15 +1,12 @@
 import * as THREE from "three";
-import SceneManager from "../objects/SceneManager";
-import sceneJSON from "url:../../static/scenes/portal_double.json";
+import { setupScene } from "../scene-setup.js";
+import sceneURL from "url:../../static/scenes/portal_double.json";
 import darkGridTexture from "url:../../static/textures/dark_grid.png";
 
 (function () {
-  const canvas = document.getElementById("main-canvas");
   let manager;
-
-  const loader = new THREE.ObjectLoader();
-  loader.load(sceneJSON, (obj) => {
-    manager = new SceneManager(canvas, obj);
+  setupScene(sceneURL, "main-canvas", (sceneManager) => {
+    manager = sceneManager;
     manager.camera.position.set(0, 6, 6);
     manager.camera.lookAt(new THREE.Vector3(0, 0, 0));
 
