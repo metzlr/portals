@@ -477,7 +477,7 @@ var _urlStaticTexturesDark_gridPngDefault = _parcelHelpers.interopDefault(_urlSt
   }
 })();
 
-},{"three":"1lq1c","url:../../static/scenes/portal_basic.json":"4hucb","url:../../static/textures/dark_grid.png":"0Nyzt","@parcel/transformer-js/lib/esmodule-helpers.js":"5gA8y","../scene-setup.js":"1nWgd"}],"1lq1c":[function(require,module,exports) {
+},{"three":"1lq1c","../scene-setup.js":"1nWgd","url:../../static/scenes/portal_basic.json":"4hucb","url:../../static/textures/dark_grid.png":"0Nyzt","@parcel/transformer-js/lib/esmodule-helpers.js":"5gA8y"}],"1lq1c":[function(require,module,exports) {
 var define;
 /**
 * @license
@@ -30092,98 +30092,6 @@ var define;
   });
 });
 
-},{}],"4hucb":[function(require,module,exports) {
-module.exports = require('./bundle-url').getBundleURL() + "../portal_basic.bdda8b97.json"
-},{"./bundle-url":"3seVR"}],"3seVR":[function(require,module,exports) {
-"use strict";
-
-/* globals document:readonly */
-var bundleURL = null;
-
-function getBundleURLCached() {
-  if (!bundleURL) {
-    bundleURL = getBundleURL();
-  }
-
-  return bundleURL;
-}
-
-function getBundleURL() {
-  try {
-    throw new Error();
-  } catch (err) {
-    var matches = ('' + err.stack).match(/(https?|file|ftp):\/\/[^)\n]+/g);
-
-    if (matches) {
-      return getBaseURL(matches[0]);
-    }
-  }
-
-  return '/';
-}
-
-function getBaseURL(url) {
-  return ('' + url).replace(/^((?:https?|file|ftp):\/\/.+)\/[^/]+$/, '$1') + '/';
-} // TODO: Replace uses with `new URL(url).origin` when ie11 is no longer supported.
-
-
-function getOrigin(url) {
-  let matches = ('' + url).match(/(https?|file|ftp):\/\/[^/]+/);
-
-  if (!matches) {
-    throw new Error('Origin not found');
-  }
-
-  return matches[0];
-}
-
-exports.getBundleURL = getBundleURLCached;
-exports.getBaseURL = getBaseURL;
-exports.getOrigin = getOrigin;
-},{}],"0Nyzt":[function(require,module,exports) {
-module.exports = require('./bundle-url').getBundleURL() + "../dark_grid.3c5b9dd2.png"
-},{"./bundle-url":"3seVR"}],"5gA8y":[function(require,module,exports) {
-"use strict";
-
-exports.interopDefault = function (a) {
-  return a && a.__esModule ? a : {
-    default: a
-  };
-};
-
-exports.defineInteropFlag = function (a) {
-  Object.defineProperty(a, '__esModule', {
-    value: true
-  });
-};
-
-exports.exportAll = function (source, dest) {
-  Object.keys(source).forEach(function (key) {
-    if (key === 'default' || key === '__esModule') {
-      return;
-    } // Skip duplicate re-exports when they have the same value.
-
-
-    if (key in dest && dest[key] === source[key]) {
-      return;
-    }
-
-    Object.defineProperty(dest, key, {
-      enumerable: true,
-      get: function () {
-        return source[key];
-      }
-    });
-  });
-  return dest;
-};
-
-exports.export = function (dest, destName, get) {
-  Object.defineProperty(dest, destName, {
-    enumerable: true,
-    get: get
-  });
-};
 },{}],"1nWgd":[function(require,module,exports) {
 var _parcelHelpers = require("@parcel/transformer-js/lib/esmodule-helpers.js");
 _parcelHelpers.defineInteropFlag(exports);
@@ -30838,7 +30746,49 @@ class PointerLockControls extends _three.EventDispatcher {
   }
 }
 
-},{"three":"1lq1c","@parcel/transformer-js/lib/esmodule-helpers.js":"5gA8y"}],"726I2":[function(require,module,exports) {
+},{"three":"1lq1c","@parcel/transformer-js/lib/esmodule-helpers.js":"5gA8y"}],"5gA8y":[function(require,module,exports) {
+"use strict";
+
+exports.interopDefault = function (a) {
+  return a && a.__esModule ? a : {
+    default: a
+  };
+};
+
+exports.defineInteropFlag = function (a) {
+  Object.defineProperty(a, '__esModule', {
+    value: true
+  });
+};
+
+exports.exportAll = function (source, dest) {
+  Object.keys(source).forEach(function (key) {
+    if (key === 'default' || key === '__esModule') {
+      return;
+    } // Skip duplicate re-exports when they have the same value.
+
+
+    if (key in dest && dest[key] === source[key]) {
+      return;
+    }
+
+    Object.defineProperty(dest, key, {
+      enumerable: true,
+      get: function () {
+        return source[key];
+      }
+    });
+  });
+  return dest;
+};
+
+exports.export = function (dest, destName, get) {
+  Object.defineProperty(dest, destName, {
+    enumerable: true,
+    get: get
+  });
+};
+},{}],"726I2":[function(require,module,exports) {
 var _parcelHelpers = require("@parcel/transformer-js/lib/esmodule-helpers.js");
 _parcelHelpers.defineInteropFlag(exports);
 var _three = require("three");
@@ -33672,6 +33622,56 @@ var define;
 module.exports="#version 300 es\n#define GLSLIFY 1\nin vec2 position;\n// out vec2 texcoords; // texcoords are in the normalized [0,1] range for the viewport-filling quad part of the triangle\n\nvoid main() {\n  gl_Position = vec4(position, 1.0, 1.0);\n  // textcoords = 0.5 * gl_Position.xy + vec2(0.5);\n}";
 },{}],"3nHBr":[function(require,module,exports) {
 module.exports="#version 300 es\nprecision highp float;\n#define GLSLIFY 1\n\nout vec4 outColor;\n\nvoid main() {\n  outColor = vec4(1.0, 0, 0, 1.0);\n}";
-},{}]},["6YuNL","3N5YS"], "3N5YS", "parcelRequireeca4")
+},{}],"4hucb":[function(require,module,exports) {
+module.exports = require('./bundle-url').getBundleURL() + "../portal_basic.bdda8b97.json"
+},{"./bundle-url":"3seVR"}],"3seVR":[function(require,module,exports) {
+"use strict";
+
+/* globals document:readonly */
+var bundleURL = null;
+
+function getBundleURLCached() {
+  if (!bundleURL) {
+    bundleURL = getBundleURL();
+  }
+
+  return bundleURL;
+}
+
+function getBundleURL() {
+  try {
+    throw new Error();
+  } catch (err) {
+    var matches = ('' + err.stack).match(/(https?|file|ftp):\/\/[^)\n]+/g);
+
+    if (matches) {
+      return getBaseURL(matches[0]);
+    }
+  }
+
+  return '/';
+}
+
+function getBaseURL(url) {
+  return ('' + url).replace(/^((?:https?|file|ftp):\/\/.+)\/[^/]+$/, '$1') + '/';
+} // TODO: Replace uses with `new URL(url).origin` when ie11 is no longer supported.
+
+
+function getOrigin(url) {
+  let matches = ('' + url).match(/(https?|file|ftp):\/\/[^/]+/);
+
+  if (!matches) {
+    throw new Error('Origin not found');
+  }
+
+  return matches[0];
+}
+
+exports.getBundleURL = getBundleURLCached;
+exports.getBaseURL = getBaseURL;
+exports.getOrigin = getOrigin;
+},{}],"0Nyzt":[function(require,module,exports) {
+module.exports = require('./bundle-url').getBundleURL() + "../dark_grid.3c5b9dd2.png"
+},{"./bundle-url":"3seVR"}]},["6YuNL","3N5YS"], "3N5YS", "parcelRequireeca4")
 
 //# sourceMappingURL=portal-basic.82ee1f43.js.map
