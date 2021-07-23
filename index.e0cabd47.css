@@ -409,11 +409,11 @@ header {
   max-width: 250px;
   border-radius: 5px;
   transition: all 0.2s ease;
-  opacity: 100%;
+  opacity: 1;
 }
 
 .scene-preview-thumbnail:hover {
-  opacity: 75%;
+  opacity: 0.75;
 }
 
 .scene-preview-text {
