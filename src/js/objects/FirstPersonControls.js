@@ -111,7 +111,6 @@ export default class FirstPersonControls {
 
   update(deltaTime, collidables) {
     this.camera.getWorldScale(_vector1);
-    // console.log(_vector1.y);
     const cameraWorldScale = _vector1;
     if (this._controls.isLocked === true) {
       // Test for collision below

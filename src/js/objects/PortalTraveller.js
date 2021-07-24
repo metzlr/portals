@@ -75,10 +75,12 @@ class PortalTraveller {
         const newWorldMatrix = portal.destinationTransform
           .clone()
           .multiply(this.camera.matrixWorld);
-        // Ensure camera matrices are up to date
-        this.camera.position.setFromMatrixPosition(newWorldMatrix);
-        this.camera.scale.setFromMatrixScale(newWorldMatrix);
-        this.camera.quaternion.setFromRotationMatrix(newWorldMatrix);
+        // Ensure camera values are up to date
+        newWorldMatrix.decompose(
+          this.camera.position,
+          this.camera.quaternion,
+          this.camera.scale
+        );
         this.camera.updateMatrix();
         this.camera.updateWorldMatrix(true);
 
