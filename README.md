@@ -1,5 +1,5 @@
 # portals
-Functional portals implemented in THREE.js
+Recursive, interactable portals implemented using THREE.js
 
 ## <a href="https://metzlr.github.io/portals">Live Demo</a>
 
