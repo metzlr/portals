@@ -98,7 +98,7 @@ class PortalSceneManager {
     this.setCollidables(collidables);
   }
 
-  /** Searches scene object tree for any object with 'userData.collidable = true` */
+  /** Extracts portals from scene object */
   extractPortalsFromObject(object) {
     const portalMap = new Map();
     // Find and create portals

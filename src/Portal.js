@@ -4,14 +4,14 @@ import Utils from "./Utils.js";
 class Portal {
   /**
    *
-   * @param {*} mesh
+   * @param {THREE.Mesh} mesh Portal mesh. Mesh geometry must a `THREE.PlaneGeometry`
    * @param {object} [options]
    * @param {Portal} [options.destination] This portal's destination portal
    * @param {boolean} [options.doubleSided] Whether or not to render both sides of this portal
    */
   constructor(mesh, options = {}) {
     if (!(mesh.geometry instanceof THREE.PlaneGeometry)) {
-      console.error("Portal object should be a plane");
+      throw new Error("Portal object should be a plane");
     }
 
     const { destination, doubleSided } = options;
