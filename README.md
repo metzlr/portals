@@ -9,9 +9,9 @@ Recursive, interactable portals implemented using THREE.js
 
 ## How to use
 
-Everything needed for using portals is located in the `src` directory.
+All the code necessary for using portals in a scene is located in the `src` directory.
 
-A scene using portals must be rendered with `PortalRender` (which under the hood is a WebGLRenderer).
+A scene using portals must be rendered with `PortalRender` (which under the hood uses a WebGLRenderer).
 
 Portals are defined with the `Portal` class, whose constructor requires a mesh that will be used as the portal surface. The geometry of the mesh must be a plane. The mesh material can be anything since `Portal` replaces it with a different one regardless. To connect one portal to another, set the `destination` property to another portal.
 
