@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { setupScene } from "../scene-setup.js";
-import sceneURL from "url:../../static/scenes/tunnels.json";
+import sceneURL from "url:../../static/scene-data/tunnels.json";
 
 (function () {
   let manager;

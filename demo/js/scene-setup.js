@@ -1,5 +1,6 @@
 import * as THREE from "three";
-import SceneManager from "./objects/SceneManager";
+import PortalSceneManager from "./objects/PortalSceneManager";
+import { WebGLIncompatibilityError } from "../../src/CustomErrors";
 
 const setupScene = (jsonUrl, canvasId, onSuccess) => {
   const canvas = document.getElementById(canvasId);
@@ -11,14 +12,19 @@ const setupScene = (jsonUrl, canvasId, onSuccess) => {
   const loader = new THREE.ObjectLoader();
   loader.load(
     jsonUrl,
-    (obj) => {
+    (sceneObj) => {
       try {
-        const manager = new SceneManager(canvas, obj);
+        const manager = new PortalSceneManager(canvas, sceneObj);
         onSuccess(manager);
       } catch (error) {
-        displayError(
-          "Looks like your browser doesn't support WebGL2 yet. Try visiting this page in the latest version of Chrome or Firefox."
-        );
+        console.log(error);
+        if (error instanceof WebGLIncompatibilityError) {
+          displayError(
+            "Looks like your browser doesn't support WebGL2 yet. Try visiting this page in the latest version of Chrome or Firefox."
+          );
+        } else {
+          throw error;
+        }
       }
     },
     undefined,

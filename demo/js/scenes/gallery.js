@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { setupScene } from "../scene-setup.js";
-import sceneURL from "url:../../static/scenes/portal_double.json";
+import sceneURL from "url:../../static/scene-data/gallery.json";
 import darkGridTexture from "url:../../static/textures/dark_grid.png";
 
 (function () {
@@ -22,6 +22,7 @@ import darkGridTexture from "url:../../static/textures/dark_grid.png";
     const floorMaterial = new THREE.MeshStandardMaterial({ map: floorTexture });
     const floor = manager.scene.getObjectByName("floor");
     floor.material = floorMaterial;
+
     renderScene();
   });
 

@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "dev": "parcel src/index.html -p 8000",
-    "prod": "parcel build src/index.html",
+    "dev": "parcel demo/index.html -p 8000",
+    "prod": "parcel build demo/index.html",
     "clear-build-cache": "rm -rf dist/ .parcel-cache/",
-    "deploy": "parcel build src/index.html --public-url /portals/ && gh-pages -d dist -b gh-pages -m 'Deploying to Github Pages'"
+    "deploy": "parcel build demo/index.html --public-url /portals/ && gh-pages -d dist -b gh-pages -m 'Deploying to Github Pages'"
   },
   "repository": {
     "type": "git",

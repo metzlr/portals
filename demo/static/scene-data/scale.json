@@ -195,57 +195,17 @@
 		"uuid": "51F8DEE4-127F-49A6-8891-65E9E2143FCD",
 		"type": "Scene",
 		"name": "scene",
-		"userData": {
-			"doubleSidedPortals": true
-		},
 		"layers": 1,
 		"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],
 		"children": [
 			{
-				"uuid": "273CF505-9572-4B39-97E1-CBB1021D2433",
-				"type": "DirectionalLight",
-				"name": "DirectionalLight",
+				"uuid": "6E5910CC-FE57-4455-876A-81C5B30D6A6F",
+				"type": "AmbientLight",
+				"name": "lightAmbient",
 				"layers": 1,
-				"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,-15.358626,11.382634,-21.181437,1],
-				"color": 16773338,
-				"intensity": 0.3,
-				"shadow": {
-					"camera": {
-						"uuid": "18198415-4861-4AA7-BA4C-A8478B46480A",
-						"type": "OrthographicCamera",
-						"layers": 1,
-						"zoom": 1,
-						"left": -5,
-						"right": 5,
-						"top": 5,
-						"bottom": -5,
-						"near": 0.5,
-						"far": 500
-					}
-				}
-			},
-			{
-				"uuid": "8C75DBA8-18A8-41B9-987F-92CB346A4A2E",
-				"type": "DirectionalLight",
-				"name": "DirectionalLight",
-				"layers": 1,
-				"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,11.950237,20.785727,3.621725,1],
-				"color": 16773858,
-				"intensity": 0.6,
-				"shadow": {
-					"camera": {
-						"uuid": "1C3E993E-4C90-4F85-B788-E639AAF9DD17",
-						"type": "OrthographicCamera",
-						"layers": 1,
-						"zoom": 1,
-						"left": -5,
-						"right": 5,
-						"top": 5,
-						"bottom": -5,
-						"near": 0.5,
-						"far": 500
-					}
-				}
+				"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,0,12.209619,0,1],
+				"color": 16762272,
+				"intensity": 0.1
 			},
 			{
 				"uuid": "177E31D2-3CE4-4E9D-BA9A-4DD941136FDC",
@@ -263,7 +223,7 @@
 							"collidable": true
 						},
 						"layers": 1,
-						"matrix": [1,0,0,0,0,0,-1,0,0,1,0,0,0,0,0,1],
+						"matrix": [1,0,0,0,0,2.220446049250313e-16,-1,0,0,1,2.220446049250313e-16,0,0,0,0,1],
 						"geometry": "47B687F6-26D4-441E-B0EC-FBC954AA91FB",
 						"material": "BB0CE5A4-6579-4368-B497-A059A664357C"
 					},
@@ -315,7 +275,8 @@
 								"type": "Mesh",
 								"name": "p_1",
 								"userData": {
-									"destination": "p_2"
+									"destination": "p_2",
+									"doubleSided": true
 								},
 								"layers": 1,
 								"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,0,2.5,7.49,1],
@@ -371,7 +332,8 @@
 								"type": "Mesh",
 								"name": "p_2",
 								"userData": {
-									"destination": "p_1"
+									"destination": "p_1",
+									"doubleSided": true
 								},
 								"layers": 1,
 								"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,0,2.5,-6.936556,1],
@@ -381,13 +343,50 @@
 					}]
 			},
 			{
-				"uuid": "6E5910CC-FE57-4455-876A-81C5B30D6A6F",
-				"type": "AmbientLight",
-				"name": "lightAmbient",
+				"uuid": "8C75DBA8-18A8-41B9-987F-92CB346A4A2E",
+				"type": "DirectionalLight",
+				"name": "DirectionalLight",
 				"layers": 1,
-				"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,0,12.209619,0,1],
-				"color": 16762272,
-				"intensity": 0.1
+				"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,11.950237,20.785727,3.621725,1],
+				"color": 16773858,
+				"intensity": 0.6,
+				"shadow": {
+					"camera": {
+						"uuid": "1C3E993E-4C90-4F85-B788-E639AAF9DD17",
+						"type": "OrthographicCamera",
+						"layers": 1,
+						"zoom": 1,
+						"left": -5,
+						"right": 5,
+						"top": 5,
+						"bottom": -5,
+						"near": 0.5,
+						"far": 500
+					}
+				}
+			},
+			{
+				"uuid": "273CF505-9572-4B39-97E1-CBB1021D2433",
+				"type": "DirectionalLight",
+				"name": "DirectionalLight",
+				"layers": 1,
+				"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,-15.358626,11.382634,-21.181437,1],
+				"color": 16773338,
+				"intensity": 0.3,
+				"shadow": {
+					"camera": {
+						"uuid": "18198415-4861-4AA7-BA4C-A8478B46480A",
+						"type": "OrthographicCamera",
+						"layers": 1,
+						"zoom": 1,
+						"left": -5,
+						"right": 5,
+						"top": 5,
+						"bottom": -5,
+						"near": 0.5,
+						"far": 500
+					}
+				}
 			}]
 	}
 }

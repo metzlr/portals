@@ -1,8 +1,15 @@
 import * as THREE from "three";
-import Utils from "../Utils.js";
+import Utils from "./Utils.js";
 
 class Portal {
-  constructor(mesh, options) {
+  /**
+   *
+   * @param {*} mesh
+   * @param {object} [options]
+   * @param {Portal} [options.destination] This portal's destination portal
+   * @param {boolean} [options.doubleSided] Whether or not to render both sides of this portal
+   */
+  constructor(mesh, options = {}) {
     if (!(mesh.geometry instanceof THREE.PlaneGeometry)) {
       console.error("Portal object should be a plane");
     }
@@ -60,13 +67,13 @@ class Portal {
   get destination() {
     return this._destination;
   }
-  get active() {
-    return this._destination !== null;
-  }
   get id() {
     return this.mesh.uuid;
   }
 
+  /**
+   * Applies any necessary updates to this portal. This function should be called every frame.
+   */
   update() {
     this._updateGlobalBoundingBoxes();
     this._updateDestinationTransform();
@@ -93,7 +100,15 @@ class Portal {
     this.destinationTransform.multiply(this.mesh.matrixWorld.clone().invert());
   }
 
-  // View matrix = inverse world matrix
+  /**
+   * Calculates and returns a projection matrix whose near plane is aligned with the portal's surface
+   * @param {THREE.Matrix4} cameraWorldMatrix
+   * @param {THREE.Matrix4} cameraWorldMatrixInverse
+   * @param {THREE.Matrix4} cameraProjectionMatrix
+   * @param {number} offsetAmount
+   * @param {number} cutoff
+   * @returns {THREE.Matrix4}
+   */
   getAlignedProjectionMatrix(
     cameraWorldMatrix,
     cameraWorldMatrixInverse,

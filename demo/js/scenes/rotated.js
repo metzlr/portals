@@ -1,13 +1,12 @@
 import * as THREE from "three";
 import { setupScene } from "../scene-setup.js";
-import sceneURL from "url:../../static/scenes/portal_basic.json";
+import sceneURL from "url:../../static/scene-data/rotated.json";
 import darkGridTexture from "url:../../static/textures/dark_grid.png";
 
 (function () {
   let manager;
   setupScene(sceneURL, "main-canvas", (sceneManager) => {
     manager = sceneManager;
-
     manager.camera.position.set(0, 6, 6);
     manager.camera.lookAt(new THREE.Vector3(0, 0, 0));
 
