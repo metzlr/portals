@@ -15,7 +15,7 @@ A scene using portals must be rendered with `PortalRender` (which under the hood
 
 Portals are defined with the `Portal` class, whose constructor requires a mesh that will be used as the portal surface. The geometry of the mesh must be a plane. The mesh material can be anything since `Portal` replaces it with a different one regardless. To connect one portal to another, set the `destination` property to another portal.
 
-Portal teleportation can be added by with `PortalTraveller` object, which attatches to a camera you want to be able to travel through portals.
+Portal teleportation can be added by with `PortalTraveller` object, which attaches to a camera that you want to be able to travel through portals.
 
 All of this can be seen in action with the following class that's used by the demo scenes:
 [PortalSceneManager](demo/js/objects/PortalSceneManager.js)
